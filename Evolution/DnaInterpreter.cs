@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Evolution.Interpreters;
 
 namespace Evolution
 {
@@ -24,33 +25,28 @@ namespace Evolution
         }
         public Movement GetMovement(Creature creature)
         {
-            var passed = new HashSet<int>();
-            var currentIndex = 0;
-            var direction = creature.Rotation;
-            while (!passed.Contains(currentIndex + direction * TotalCommands))
+            ProcessingCreature processingCreature = new ProcessingCreature(creature, TotalCommands);
+
+            while (processingCreature.NotProcessed())
             {
-                passed.Add(currentIndex + direction * TotalCommands);
-                if (creature.Dna[currentIndex] == 0)
+                if (processingCreature.Command < 2)
                 {
-                    return NullMovement(direction);
-                }
-                if (creature.Dna[currentIndex] == 1)
-                {
-                    return DirectMovement(direction);
+                    var processor = new MoveProcessor();
+                    return processor.Process(processingCreature.Command, processingCreature).Movement;
                 }
 
-                if (creature.Dna[currentIndex] < 5)
+                if (processingCreature.Command < 5)
                 {
                     // rotation {2,3,4}
                     //  2 |   |  4    -1    1 |   | 3    x2    2 |   | 6      direction+
                     // ------------   =>   -----------   =>   -----------         =>         new direction
                     //    | 3 |               | 2 |              | 4 |
-                    var rotation = creature.Dna[currentIndex] - 1;
+                    var rotation = processingCreature.Command - 1;
                     rotation = rotation * 2;
-                    direction = (direction + rotation) % 8;
-                    currentIndex++;
+                    processingCreature.Direction = (processingCreature.Direction + rotation) % 8;
+                    processingCreature.ProcessingIndex++;
                 }
-                else if (creature.Dna[currentIndex] < 13)
+                else if (processingCreature.Command < 13)
                 {
                     // direction check {5-12} (example :current direction=2, arrow -> "0")
                     //  12 | 11 | 10          7 | 6 | 5                1 | 0 | 7
@@ -58,16 +54,16 @@ namespace Evolution
                     //  5  | <- | 9     =>    0 | < | 4       =>       2 | < | 6    =>   {
                     // --------------        -----------              -----------         \  currentIndex + 2, !canMove
                     //  6  | 7  | 8           1 | 2 | 3                3 | 4 | 5                 
-                    var tempDirection = creature.Dna[currentIndex] - 5;
-                    tempDirection = (tempDirection + direction) % 8;
+                    var tempDirection = processingCreature.Command - 5;
+                    tempDirection = (tempDirection + processingCreature.Direction) % 8;
                     var target = GetAt(creature.X, creature.Y, tempDirection);
-                    currentIndex++;
+                    processingCreature.ProcessingIndex++;
                     if (!(target == null || target is Food))
                     {
-                        currentIndex++;
+                        processingCreature.ProcessingIndex++;
                     }
                 }
-                else if (creature.Dna[currentIndex] < 21)
+                else if (processingCreature.Command < 21)
                 {
                     // direction check {13-20} (example :current direction=2, arrow -> "0")
                     //  20 | 19 | 18          7 | 6 | 5                1 | 0 | 7
@@ -75,27 +71,27 @@ namespace Evolution
                     //  13 | <- | 17    =>    0 | < | 4       =>       2 | < | 6    =>   {
                     // --------------        -----------              -----------         \  currentIndex + 2, !canMove
                     //  14 | 15 | 16          1 | 2 | 3                3 | 4 | 5                 
-                    var tempDirection = creature.Dna[currentIndex] - 13;
-                    tempDirection = (tempDirection + direction) % 8;
+                    var tempDirection = processingCreature.Command - 13;
+                    tempDirection = (tempDirection + processingCreature.Direction) % 8;
                     var target = GetAt(creature.X, creature.Y, tempDirection);
-                    currentIndex++;
+                    processingCreature.ProcessingIndex++;
                     if (!(target is Food))
                     {
-                        currentIndex++;
+                        processingCreature.ProcessingIndex++;
                     }
                 }
                 else
                 {
-                    currentIndex = creature.Dna[currentIndex] - PredefinedCommandsCount;
+                    processingCreature.ProcessingIndex = processingCreature.Command - PredefinedCommandsCount;
                 }
 
-                if (currentIndex >= DnaLength)
+                if (processingCreature.ProcessingIndex >= DnaLength)
                 {
-                    currentIndex = 0;
+                    processingCreature.ProcessingIndex = 0;
                 }
             }
             // Infinitive loop
-            return NullMovement(direction);
+            return NullMovement(processingCreature.Direction);
         }
 
         private Movement NullMovement(int direction)
@@ -147,20 +143,6 @@ namespace Evolution
             }
 
             return _field[y * _width + x];
-        }
-    }
-
-    public class Movement
-    {
-        public int MoveX { get; }
-        public int MoveY { get; }
-        public int Direction { get; }
-
-        public Movement(int moveX, int moveY, int direction)
-        {
-            MoveX = moveX;
-            MoveY = moveY;
-            Direction = direction;
         }
     }
 }
