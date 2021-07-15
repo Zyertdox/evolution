@@ -63,32 +63,12 @@ namespace Evolution
                 var index = Random.Next(RedirectProcessor.DnaLength);
                 dna[index] = Random.Next(DnaInterpreter.TotalCommands);
             }
-            ExtendedCommand[] commands = new ExtendedCommand[dna.Count];
-            for (int i = 0; i < dna.Count; i++)
-            {
-                var value = dna[i];
-                int index = 0;
-                while (true)
-                {
-                    if (value < processors[index].Length)
-                    {
-                        break;
-                    }
 
-                    index++;
-                    value -= processors[index].Length;
-                }
-                commands[i] = new ExtendedCommand
-                {
-                    LocalCommand = value,
-                    Processor = processors[index]
-                };
-            }
             return new Creature
             {
                 Parent = creatureRecord.Id,
                 Dna = dna,
-                DnaDecoded = commands
+                DnaDecoded = DnaInterpreter.Decode(processors, dna)
             };
         }
     }
