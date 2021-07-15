@@ -14,7 +14,7 @@ namespace Evolution.Interpreters
             var rotation = (normalizedCommandNumber + 1) * 2;
             processingCreature.Direction = (processingCreature.Direction + rotation) % 8;
             processingCreature.ProcessingIndex++;
-            return new Command();
+            return null;
         }
     }
 }
