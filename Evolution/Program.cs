@@ -109,11 +109,11 @@ namespace Evolution
                             new Coord(Width, Height),
                             new Coord(0, 0),
                             ref rect);
-                        Thread.Sleep(50);
+                        Thread.Sleep(20);
                         nextStep = processor.Step();
                     }
 
-                    Thread.Sleep(500);
+                    Thread.Sleep(200);
                 }
             }
         }
