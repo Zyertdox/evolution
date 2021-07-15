@@ -55,13 +55,15 @@ namespace Evolution
 
         private CreatureRecord[] CreateBase()
         {
+            var dna = new int[DnaInterpreter.DnaLength];
+            DnaInterpreter.DefaultDna.CopyTo(dna, 0);
+
             var record = new CreatureRecord
             {
                 Id = Guid.NewGuid(),
                 ParentId = null,
-                Dna = new int[DnaInterpreter.DnaLength]
+                Dna = dna
             };
-            record.Dna[0] = 7;
             var records = new CreatureRecord[DnaProcessor.GenerationSetCount];
             for (var i = 0; i < DnaProcessor.GenerationSetCount; i++)
             {

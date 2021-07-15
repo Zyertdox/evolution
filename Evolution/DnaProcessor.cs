@@ -58,7 +58,7 @@ namespace Evolution
             for (int i = 0; i < mutations; i++)
             {
                 var index = Random.Next(DnaInterpreter.DnaLength);
-                dna[index] = Random.Next(DnaInterpreter.DnaLength + DnaInterpreter.PredefinedCommandsCount);
+                dna[index] = Random.Next(DnaInterpreter.TotalCommands);
             }
             return new Creature
             {

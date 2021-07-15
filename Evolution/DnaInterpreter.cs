@@ -1,18 +1,20 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Evolution
 {
     public class DnaInterpreter
     {
-        public const int PredefinedCommandsCount = 25;
+        public const int PredefinedCommandsCount = 21;
         public const int DnaLength = 64;
+        public const int TotalCommands = PredefinedCommandsCount + DnaLength;
 
         private readonly IPoint[] _field;
         private readonly int _width;
         private readonly int _height;
-
         private static readonly Wall NullWall = new Wall();
-        private static readonly Movement NullMovement = new Movement(0, 0);
+
+        public static int[] DefaultDna = { 5, 1, 2, 5, 1, 2, 1 };
 
         public DnaInterpreter(IPoint[] field, int width, int height)
         {
@@ -24,159 +26,67 @@ namespace Evolution
         {
             var passed = new HashSet<int>();
             var currentIndex = 0;
-            while (!passed.Contains(currentIndex))
+            var direction = creature.Rotation;
+            while (!passed.Contains(currentIndex + direction * TotalCommands))
             {
-                passed.Add(currentIndex);
-                switch (creature.Dna[currentIndex])
+                passed.Add(currentIndex + direction * TotalCommands);
+                if (creature.Dna[currentIndex] == 0)
                 {
-                    #region Movement (0-8)
-                    // Movements
-                    //  4 | 3 | 2
-                    // -----------
-                    //  5 | 0 | 1
-                    // -----------
-                    //  6 | 7 | 8 
-                    case 0: return NullMovement;
-                    case 1: return new Movement(1, 0);
-                    case 2: return new Movement(1, 1);
-                    case 3: return new Movement(0, 1);
-                    case 4: return new Movement(-1, 1);
-                    case 5: return new Movement(-1, 0);
-                    case 6: return new Movement(-1, -1);
-                    case 7: return new Movement(0, -1);
-                    case 8: return new Movement(1, -1);
-                    #endregion Movement
-                    #region Can Move (9-16)
-                    // Can move?
-                    //  12 | 11 | 10
-                    // --------------
-                    //  13 |    |  9 
-                    // --------------
-                    //  14 | 15 | 16 
-                    case 9:
+                    return NullMovement(direction);
+                }
+                if (creature.Dna[currentIndex] == 1)
+                {
+                    return DirectMovement(direction);
+                }
+
+                if (creature.Dna[currentIndex] < 5)
+                {
+                    // rotation {2,3,4}
+                    //  2 |   |  4    -1    1 |   | 3    x2    2 |   | 6      direction+
+                    // ------------   =>   -----------   =>   -----------         =>         new direction
+                    //    | 3 |               | 2 |              | 4 |
+                    var rotation = creature.Dna[currentIndex] - 1;
+                    rotation = rotation * 2;
+                    direction = (direction + rotation) % 8;
+                    currentIndex++;
+                }
+                else if (creature.Dna[currentIndex] < 13)
+                {
+                    // direction check {5-12} (example :current direction=2, arrow -> "0")
+                    //  12 | 11 | 10          7 | 6 | 5                1 | 0 | 7
+                    // --------------   -5   -----------    rotate    -----------         /  currentIndex + 1, canMove
+                    //  5  | <- | 9     =>    0 | < | 4       =>       2 | < | 6    =>   {
+                    // --------------        -----------              -----------         \  currentIndex + 2, !canMove
+                    //  6  | 7  | 8           1 | 2 | 3                3 | 4 | 5                 
+                    var tempDirection = creature.Dna[currentIndex] - 5;
+                    tempDirection = (tempDirection + direction) % 8;
+                    var target = GetAt(creature.X, creature.Y, tempDirection);
+                    currentIndex++;
+                    if (!(target == null || target is Food))
+                    {
                         currentIndex++;
-                        if (!CanMove(creature.X + 1, creature.Y))
-                        {
-                            currentIndex++;
-                        }
-                        break;
-                    case 10:
+                    }
+                }
+                else if (creature.Dna[currentIndex] < 21)
+                {
+                    // direction check {13-20} (example :current direction=2, arrow -> "0")
+                    //  20 | 19 | 18          7 | 6 | 5                1 | 0 | 7
+                    // --------------   -13  -----------    rotate    -----------         /  currentIndex + 1, canMove
+                    //  13 | <- | 17    =>    0 | < | 4       =>       2 | < | 6    =>   {
+                    // --------------        -----------              -----------         \  currentIndex + 2, !canMove
+                    //  14 | 15 | 16          1 | 2 | 3                3 | 4 | 5                 
+                    var tempDirection = creature.Dna[currentIndex] - 13;
+                    tempDirection = (tempDirection + direction) % 8;
+                    var target = GetAt(creature.X, creature.Y, tempDirection);
+                    currentIndex++;
+                    if (!(target is Food))
+                    {
                         currentIndex++;
-                        if (!CanMove(creature.X + 1, creature.Y + 1))
-                        {
-                            currentIndex++;
-                        }
-                        break;
-                    case 11:
-                        currentIndex++;
-                        if (!CanMove(creature.X, creature.Y + 1))
-                        {
-                            currentIndex++;
-                        }
-                        break;
-                    case 12:
-                        currentIndex++;
-                        if (!CanMove(creature.X - 1, creature.Y + 1))
-                        {
-                            currentIndex++;
-                        }
-                        break;
-                    case 13:
-                        currentIndex++;
-                        if (!CanMove(creature.X - 1, creature.Y))
-                        {
-                            currentIndex++;
-                        }
-                        break;
-                    case 14:
-                        currentIndex++;
-                        if (!CanMove(creature.X - 1, creature.Y - 1))
-                        {
-                            currentIndex++;
-                        }
-                        break;
-                    case 15:
-                        currentIndex++;
-                        if (!CanMove(creature.X, creature.Y - 1))
-                        {
-                            currentIndex++;
-                        }
-                        break;
-                    case 16:
-                        currentIndex++;
-                        if (!CanMove(creature.X + 1, creature.Y - 1))
-                        {
-                            currentIndex++;
-                        }
-                        break;
-                    #endregion Can Move
-                    #region Can Eat (17-24)
-                    // Can move?
-                    //  20 | 19 | 18
-                    // --------------
-                    //  21 |    | 17 
-                    // --------------
-                    //  22 | 23 | 24 
-                    case 17:
-                        currentIndex++;
-                        if (!CanEat(creature.X + 1, creature.Y))
-                        {
-                            currentIndex++;
-                        }
-                        break;
-                    case 18:
-                        currentIndex++;
-                        if (!CanEat(creature.X + 1, creature.Y + 1))
-                        {
-                            currentIndex++;
-                        }
-                        break;
-                    case 19:
-                        currentIndex++;
-                        if (!CanEat(creature.X, creature.Y + 1))
-                        {
-                            currentIndex++;
-                        }
-                        break;
-                    case 20:
-                        currentIndex++;
-                        if (!CanEat(creature.X - 1, creature.Y + 1))
-                        {
-                            currentIndex++;
-                        }
-                        break;
-                    case 21:
-                        currentIndex++;
-                        if (!CanEat(creature.X - 1, creature.Y))
-                        {
-                            currentIndex++;
-                        }
-                        break;
-                    case 22:
-                        currentIndex++;
-                        if (!CanEat(creature.X - 1, creature.Y - 1))
-                        {
-                            currentIndex++;
-                        }
-                        break;
-                    case 23:
-                        currentIndex++;
-                        if (!CanEat(creature.X, creature.Y - 1))
-                        {
-                            currentIndex++;
-                        }
-                        break;
-                    case 24:
-                        currentIndex++;
-                        if (!CanEat(creature.X + 1, creature.Y - 1))
-                        {
-                            currentIndex++;
-                        }
-                        break;
-                        #endregion Can Eat
-                    default:
-                        currentIndex = creature.Dna[currentIndex] - PredefinedCommandsCount;
-                        break;
+                    }
+                }
+                else
+                {
+                    currentIndex = creature.Dna[currentIndex] - PredefinedCommandsCount;
                 }
 
                 if (currentIndex >= DnaLength)
@@ -185,21 +95,52 @@ namespace Evolution
                 }
             }
             // Infinitive loop
-            return NullMovement;
+            return NullMovement(direction);
         }
 
-        public bool CanEat(int x, int y)
+        private Movement NullMovement(int direction)
         {
-            var target = GetAt(x, y);
-            return !(target is Food);
+            return new Movement(0, 0, direction);
         }
-        public bool CanMove(int x, int y)
+        private Movement DirectMovement(int direction)
         {
-            var target = GetAt(x, y);
-            return !(target is Wall || target is Creature);
+            switch (direction)
+            {
+                case 0: return new Movement(0, -1, 0);
+                case 2: return new Movement(-1, 0, 2);
+                case 4: return new Movement(0, 1, 4);
+                case 6: return new Movement(1, 0, 6);
+            }
+            return new Movement(0, 0, 0);
         }
-        public IPoint GetAt(int x, int y)
+
+        public IPoint GetAt(int x, int y, int tempDirection)
         {
+            int[] up = { 1, 0, 7 };
+            int[] down = { 3, 4, 5 };
+            int[] left = { 1, 2, 3 };
+            int[] right = { 5, 6, 7 };
+
+            if (up.Contains(tempDirection))
+            {
+                y--;
+            }
+
+            if (down.Contains(tempDirection))
+            {
+                y++;
+            }
+
+            if (left.Contains(tempDirection))
+            {
+                x--;
+            }
+
+            if (right.Contains(tempDirection))
+            {
+                x++;
+            }
+
             if (x < 0 || y < 0 || x >= _width || y >= _height)
             {
                 return NullWall;
@@ -213,11 +154,13 @@ namespace Evolution
     {
         public int MoveX { get; }
         public int MoveY { get; }
+        public int Direction { get; }
 
-        public Movement(int moveX, int moveY)
+        public Movement(int moveX, int moveY, int direction)
         {
             MoveX = moveX;
             MoveY = moveY;
+            Direction = direction;
         }
     }
 }

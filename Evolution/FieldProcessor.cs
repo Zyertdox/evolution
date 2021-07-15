@@ -101,6 +101,7 @@ namespace Evolution
                     {
                         creature.X = nextX;
                         creature.Y = nextY;
+                        creature.Rotation = movement.Direction;
                     }
                     _points[creature.Y * _width + creature.X] = creature;
                 }
