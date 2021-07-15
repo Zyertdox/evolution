@@ -66,19 +66,13 @@ namespace Evolution
 
             while (processingCreature.NotProcessed())
             {
-                int commandIndex = processingCreature.Command;
-                foreach ((int level, IProcessor processor) in Processors)
+                var command = processingCreature.ProcessingIndex >= processingCreature.DnaDecoded.Length
+                    ? ExtendedCommand.Create<MoveProcessor>(0)
+                    : processingCreature.DnaDecoded[processingCreature.ProcessingIndex];
+                var result = command.Processor.Process(command.LocalCommand, processingCreature);
+                if(result != null)
                 {
-                    if (commandIndex >= level && commandIndex < level + processor.Length)
-                    {
-                        int normalized = commandIndex - level;
-                        Command command = processor.Process(normalized, processingCreature);
-                        if (command != null)
-                        {
-                            return command.Movement;
-                        }
-                        break;
-                    }
+                    return result.Movement;
                 }
             }
             // Infinitive loop

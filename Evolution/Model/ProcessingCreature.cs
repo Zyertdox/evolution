@@ -5,6 +5,7 @@ namespace Evolution.Model
     public class ProcessingCreature
     {
         public IList<int> Dna { get; set; }
+        public ExtendedCommand[] DnaDecoded { get; private set; }
         public HashSet<long> Processed { get; } = new HashSet<long>();
         public int X { get; set; }
         public int Y { get; set; }
@@ -12,7 +13,6 @@ namespace Evolution.Model
         public int Direction { get; set; }
         public Field Field { get; }
         public IPoint Target { get; set; }
-
         public int Command => ProcessingIndex >= Dna.Count ? -1 : Dna[ProcessingIndex];
 
         private readonly int _totalCommands;
@@ -20,6 +20,7 @@ namespace Evolution.Model
         public ProcessingCreature(Creature creature, int totalCommands, Field field)
         {
             Dna = creature.Dna;
+            DnaDecoded = creature.DnaDecoded;
             X = creature.X;
             Y = creature.Y;
             Direction = creature.Rotation;
