@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Evolution.Interpreters;
 using System.Linq;
-using Evolution.Interpreters;
 
 namespace Evolution
 {
@@ -37,14 +36,9 @@ namespace Evolution
 
                 if (processingCreature.Command < 5)
                 {
-                    // rotation {2,3,4}
-                    //  2 |   |  4    -1    1 |   | 3    x2    2 |   | 6      direction+
-                    // ------------   =>   -----------   =>   -----------         =>         new direction
-                    //    | 3 |               | 2 |              | 4 |
-                    var rotation = processingCreature.Command - 1;
-                    rotation = rotation * 2;
-                    processingCreature.Direction = (processingCreature.Direction + rotation) % 8;
-                    processingCreature.ProcessingIndex++;
+                    var normalized = processingCreature.Command - 2;
+                    RotationProcessor processor = new RotationProcessor();
+                    processor.Process(normalized, processingCreature);
                 }
                 else if (processingCreature.Command < 13)
                 {
@@ -54,9 +48,9 @@ namespace Evolution
                     //  5  | <- | 9     =>    0 | < | 4       =>       2 | < | 6    =>   {
                     // --------------        -----------              -----------         \  currentIndex + 2, !canMove
                     //  6  | 7  | 8           1 | 2 | 3                3 | 4 | 5                 
-                    var tempDirection = processingCreature.Command - 5;
+                    int tempDirection = processingCreature.Command - 5;
                     tempDirection = (tempDirection + processingCreature.Direction) % 8;
-                    var target = GetAt(creature.X, creature.Y, tempDirection);
+                    IPoint target = GetAt(creature.X, creature.Y, tempDirection);
                     processingCreature.ProcessingIndex++;
                     if (!(target == null || target is Food))
                     {
@@ -71,9 +65,9 @@ namespace Evolution
                     //  13 | <- | 17    =>    0 | < | 4       =>       2 | < | 6    =>   {
                     // --------------        -----------              -----------         \  currentIndex + 2, !canMove
                     //  14 | 15 | 16          1 | 2 | 3                3 | 4 | 5                 
-                    var tempDirection = processingCreature.Command - 13;
+                    int tempDirection = processingCreature.Command - 13;
                     tempDirection = (tempDirection + processingCreature.Direction) % 8;
-                    var target = GetAt(creature.X, creature.Y, tempDirection);
+                    IPoint target = GetAt(creature.X, creature.Y, tempDirection);
                     processingCreature.ProcessingIndex++;
                     if (!(target is Food))
                     {
@@ -91,23 +85,7 @@ namespace Evolution
                 }
             }
             // Infinitive loop
-            return NullMovement(processingCreature.Direction);
-        }
-
-        private Movement NullMovement(int direction)
-        {
-            return new Movement(0, 0, direction);
-        }
-        private Movement DirectMovement(int direction)
-        {
-            switch (direction)
-            {
-                case 0: return new Movement(0, -1, 0);
-                case 2: return new Movement(-1, 0, 2);
-                case 4: return new Movement(0, 1, 4);
-                case 6: return new Movement(1, 0, 6);
-            }
-            return new Movement(0, 0, 0);
+            return MoveProcessor.NullMovement(processingCreature.Direction);
         }
 
         public IPoint GetAt(int x, int y, int tempDirection)
