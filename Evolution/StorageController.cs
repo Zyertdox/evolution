@@ -41,7 +41,7 @@ namespace Evolution
             {
                 RandomSeed = DateTime.UtcNow.ToFileTimeUtc().GetHashCode(),
                 Records = records,
-                Processors = DnaInterpreter.Processors.Select((i, p) => p.GetType().FullName).ToList()
+                Processors = DnaInterpreter.Processors.Select(p => p.Item2.GetType().FullName).ToList()
             };
 
             var dataStr = JsonConvert.SerializeObject(generation);

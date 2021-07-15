@@ -2,6 +2,7 @@
 using Evolution.Model;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Evolution
 {
@@ -77,13 +78,19 @@ namespace Evolution
                 int index = 0;
                 while (true)
                 {
+                    if (index >= processors.Count)
+                    {
+                        index = 0;
+                        value = 0;
+                        break;
+                    }
                     if (value < processors[index].Length)
                     {
                         break;
                     }
 
-                    index++;
                     value -= processors[index].Length;
+                    index++;
                 }
                 commands[i] = new ExtendedCommand
                 {
@@ -92,6 +99,19 @@ namespace Evolution
                 };
             }
             return commands;
+        }
+
+        public static int[] Encode(List<Tuple<int, IProcessor>> processors, ExtendedCommand[] commands)
+        {
+            var procLevels = processors.ToDictionary(p => p.Item2.GetType().FullName, p => p.Item1);
+            int[] dna = new int[commands.Length];
+            for(int i = 0; i < commands.Length; i++)
+            {
+                var command = commands[i];
+                var level = procLevels[command.Processor.GetType().FullName];
+                dna[i] = level + command.LocalCommand;
+            }
+            return dna;
         }
     }
 }
