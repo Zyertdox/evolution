@@ -4,6 +4,8 @@ namespace Evolution.Interpreters
 {
     public class MoveProcessor : IProcessor
     {
+        public int Length => 2;
+
         public Command Process(int normalizedCommandNumber, ProcessingCreature processingCreature)
         {
             Command command = new Command

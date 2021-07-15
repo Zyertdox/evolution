@@ -5,6 +5,8 @@ namespace Evolution.Interpreters
 {
     public class FocusProcessor : IProcessor
     {
+        public int Length => 8;
+
         public Command Process(int normalizedCommandNumber, ProcessingCreature processingCreature)
         {
             int direction = normalizedCommandNumber;

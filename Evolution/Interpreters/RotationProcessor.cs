@@ -4,6 +4,8 @@ namespace Evolution.Interpreters
 {
     internal class RotationProcessor : IProcessor
     {
+        public int Length => 3;
+
         public Command Process(int normalizedCommandNumber, ProcessingCreature processingCreature)
         {
             // rotation {0,1,2}

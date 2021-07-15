@@ -4,6 +4,8 @@ namespace Evolution.Interpreters
 {
     public class IdentifyProcessor : IProcessor
     {
+        public int Length => 4;
+
         public Command Process(int normalizedCommandNumber, ProcessingCreature processingCreature)
         {
             processingCreature.ProcessingIndex++;
