@@ -12,6 +12,7 @@ namespace Evolution
         private readonly IPoint[] _points;
         private readonly HashSet<Creature> _creatures;
         private int _foodBuffer;
+        private readonly CreatureProcessor _creatureProcessor;
 
         public short[] Field
         {
@@ -53,8 +54,10 @@ namespace Evolution
                     {
                         X = x,
                         Y = y,
-                        FoodValue = 20
+                        FoodValue = 20,
+                        Dna = new int[CreatureProcessor.DnaLength]
                     };
+                    point.Dna[0] = 5;
                     _points[y * width + x] = point;
                     _creatures.Add(point);
                 }
@@ -66,6 +69,7 @@ namespace Evolution
 
             _foodBuffer = 2500;
             FillFood();
+            _creatureProcessor = new CreatureProcessor(_points, width, height);
         }
 
         public void Step()
@@ -75,11 +79,14 @@ namespace Evolution
                 creature.FoodValue--;
                 _foodBuffer++;
 
-                var nextX = creature.X - 1;
-                var nextY = creature.Y;
-                if (nextX < 0)
+                var movement = _creatureProcessor.GetMovement(creature);
+
+                var nextX = creature.X + movement.MoveX;
+                var nextY = creature.Y + movement.MoveY;
+                if (nextX < 0 || nextX >= _width || nextY < 0 || nextY >= _height)
                 {
                     nextX = creature.X;
+                    nextY = creature.Y;
                 }
 
                 if (_points[nextY * _width + nextX] is Food food)
