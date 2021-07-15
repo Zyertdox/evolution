@@ -9,16 +9,8 @@ namespace Evolution.Interpreters
 
         public Command Process(int normalizedCommandNumber, ProcessingCreature processingCreature)
         {
-            if (normalizedCommandNumber < DnaLength)
-            {
-                processingCreature.ProcessingIndex = normalizedCommandNumber;
-                return null;
-            }
-
-            return new Command
-            {
-                Movement = MoveProcessor.NullMovement(processingCreature.Direction)
-            };
+            processingCreature.ProcessingIndex = normalizedCommandNumber;
+            return null;
         }
     }
 }

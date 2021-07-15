@@ -23,6 +23,10 @@ namespace Evolution
 
             while (processingCreature.NotProcessed())
             {
+                if (processingCreature.ProcessingIndex >= RedirectProcessor.DnaLength)
+                {
+                    return MoveProcessor.NullMovement(processingCreature.Direction);
+                }
                 if (processingCreature.Command < 2)
                 {
                     MoveProcessor processor = new MoveProcessor();
