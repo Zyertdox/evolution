@@ -10,18 +10,22 @@ namespace Evolution.Model
         public int Y { get; set; }
         public int ProcessingIndex { get; set; } = 0;
         public int Direction { get; set; }
+        public Field Field { get; }
+        public IPoint Target { get; set; }
 
         public int Command => Dna[ProcessingIndex];
 
         private readonly int _totalCommands;
 
-        public ProcessingCreature(Creature creature, int totalCommands)
+        public ProcessingCreature(Creature creature, int totalCommands, Field field)
         {
             Dna = creature.Dna;
             X = creature.X;
             Y = creature.Y;
             Direction = creature.Rotation;
             _totalCommands = totalCommands;
+
+            Field = field;
         }
 
         public bool NotProcessed()

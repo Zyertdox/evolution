@@ -65,7 +65,7 @@ namespace Evolution
             }
 
             FillFood();
-            _creatureProcessor = new DnaInterpreter(_field, width, height);
+            _creatureProcessor = new DnaInterpreter(_field);
         }
 
         public bool Step()

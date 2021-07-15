@@ -16,7 +16,7 @@ namespace Evolution.Model
             {
                 if (x >= Width || x < 0 || y < 0 || y >= Height)
                 {
-                    return null;
+                    return Wall.Default;
                 }
                 return _points[x + y * Width];
             }

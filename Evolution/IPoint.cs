@@ -32,6 +32,6 @@ namespace Evolution
 
     public class Wall : IPoint
     {
-
+        public static Wall Default = new Wall();
     }
 }
