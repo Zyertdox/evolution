@@ -10,14 +10,14 @@ namespace Evolution
         public const int DnaLength = 64;
         public const int TotalCommands = PredefinedCommandsCount + DnaLength;
 
-        private readonly IPoint[] _field;
+        private readonly Field _field;
         private readonly int _width;
         private readonly int _height;
         private static readonly Wall NullWall = new Wall();
 
         public static int[] DefaultDna = { 5, 1, 2, 5, 1, 2, 1 };
 
-        public DnaInterpreter(IPoint[] field, int width, int height)
+        public DnaInterpreter(Field field, int width, int height)
         {
             _field = field;
             _width = width;
@@ -121,7 +121,7 @@ namespace Evolution
                 return NullWall;
             }
 
-            return _field[y * _width + x];
+            return _field[x,y];
         }
     }
 }

@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Evolution.Model;
 
 namespace Evolution
 {
     public class FieldProcessor
     {
-        private readonly int _width;
-        private readonly int _height;
         private readonly Random _random;
 
-        private readonly IPoint[] _points;
+        private readonly Field _field;
         private readonly HashSet<Creature> _creatures;
         private int _foodBuffer;
         private readonly DnaInterpreter _creatureProcessor;
@@ -20,15 +19,15 @@ namespace Evolution
         {
             get
             {
-                var result = new short[_points.Length];
-                for (var i = 0; i < _points.Length; i++)
+                var result = new short[_field.Length];
+                for (var i = 0; i < _field.Length; i++)
                 {
-                    if (_points[i] is Creature)
+                    if (_field[i] is Creature)
                     {
                         result[i] = 2;
                     }
 
-                    if (_points[i] is Food)
+                    if (_field[i] is Food)
                     {
                         result[i] = 1;
                     }
@@ -40,12 +39,10 @@ namespace Evolution
 
         public FieldProcessor(int width, int height, DnaProcessor dnaProcessor)
         {
-            _width = width;
-            _height = height;
             _dnaProcessor = dnaProcessor;
             _creatures = dnaProcessor.GetCreatures();
             _random = dnaProcessor.Random;
-            _points = new IPoint[width * height];
+            _field = new Field(width, height);
 
             _foodBuffer = 10000;
 
@@ -57,18 +54,18 @@ namespace Evolution
                 {
                     x = _random.Next(width);
                     y = _random.Next(height);
-                } while (_points[y * width + x] != null);
+                } while (_field[x, y] != null);
 
                 creature.X = x;
                 creature.Y = y;
                 creature.Rotation = _random.Next(4) * 2;
                 creature.FoodValue = 20;
-                _points[y * width + x] = creature;
+                _field[x, y] = creature;
                 _foodBuffer -= creature.FoodValue + Creature.CreatureSkinFoodValue;
             }
 
             FillFood();
-            _creatureProcessor = new DnaInterpreter(_points, width, height);
+            _creatureProcessor = new DnaInterpreter(_field, width, height);
         }
 
         public bool Step()
@@ -82,28 +79,28 @@ namespace Evolution
 
                 var nextX = creature.X + movement.MoveX;
                 var nextY = creature.Y + movement.MoveY;
-                if (nextX < 0 || nextX >= _width || nextY < 0 || nextY >= _height)
+                if (nextX < 0 || nextX >= _field.Width || nextY < 0 || nextY >= _field.Height)
                 {
                     nextX = creature.X;
                     nextY = creature.Y;
                 }
 
-                if (_points[nextY * _width + nextX] is Food food)
+                if (_field[nextX, nextY] is Food food)
                 {
                     creature.FoodValue += food.Value;
-                    _points[nextY * _width + nextX] = null;
+                    _field[nextX, nextY] = null;
                 }
 
-                _points[creature.Y * _width + creature.X] = null;
+                _field[creature.X, creature.Y] = null;
                 if (creature.FoodValue > 0)
                 {
-                    if (_points[nextY * _width + nextX] == null)
+                    if (_field[nextX, nextY] == null)
                     {
                         creature.X = nextX;
                         creature.Y = nextY;
                         creature.Rotation = movement.Direction;
                     }
-                    _points[creature.Y * _width + creature.X] = creature;
+                    _field[creature.X, creature.Y] = creature;
                 }
                 else
                 {
@@ -130,12 +127,12 @@ namespace Evolution
         {
             while (_foodBuffer > 0)
             {
-                var x = _random.Next(_width);
-                var y = _random.Next(_height);
-                if (_points[y * _width + x] == null)
+                var x = _random.Next(_field.Width);
+                var y = _random.Next(_field.Height);
+                if (_field[x, y] == null)
                 {
                     var food = new Food();
-                    _points[y * _width + x] = food;
+                    _field[x, y] = food;
                     _foodBuffer -= food.Value;
                 }
             }
