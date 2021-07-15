@@ -50,15 +50,15 @@ namespace Evolution
 
         private Creature CreateCreature(CreatureRecord creatureRecord, int mutations)
         {
-            var dna = creatureRecord.Dna.Take(CreatureProcessor.DnaLength).ToList();
-            while (dna.Count < CreatureProcessor.DnaLength)
+            var dna = creatureRecord.Dna.Take(DnaInterpreter.DnaLength).ToList();
+            while (dna.Count < DnaInterpreter.DnaLength)
             {
                 dna.Add(0);
             }
             for (int i = 0; i < mutations; i++)
             {
-                var index = Random.Next(CreatureProcessor.DnaLength);
-                dna[index] = Random.Next(CreatureProcessor.DnaLength + CreatureProcessor.PredefinedCommandsCount);
+                var index = Random.Next(DnaInterpreter.DnaLength);
+                dna[index] = Random.Next(DnaInterpreter.DnaLength + DnaInterpreter.PredefinedCommandsCount);
             }
             return new Creature
             {

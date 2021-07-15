@@ -59,7 +59,7 @@ namespace Evolution
             {
                 Id = Guid.NewGuid(),
                 ParentId = null,
-                Dna = new int[CreatureProcessor.DnaLength]
+                Dna = new int[DnaInterpreter.DnaLength]
             };
             record.Dna[0] = 7;
             var records = new CreatureRecord[DnaProcessor.GenerationSetCount];

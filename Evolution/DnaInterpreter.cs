@@ -2,7 +2,7 @@
 
 namespace Evolution
 {
-    public class CreatureProcessor
+    public class DnaInterpreter
     {
         public const int PredefinedCommandsCount = 25;
         public const int DnaLength = 64;
@@ -14,7 +14,7 @@ namespace Evolution
         private static readonly Wall NullWall = new Wall();
         private static readonly Movement NullMovement = new Movement(0, 0);
 
-        public CreatureProcessor(IPoint[] field, int width, int height)
+        public DnaInterpreter(IPoint[] field, int width, int height)
         {
             _field = field;
             _width = width;

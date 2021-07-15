@@ -13,7 +13,7 @@ namespace Evolution
         private readonly IPoint[] _points;
         private readonly HashSet<Creature> _creatures;
         private int _foodBuffer;
-        private readonly CreatureProcessor _creatureProcessor;
+        private readonly DnaInterpreter _creatureProcessor;
         private readonly DnaProcessor _dnaProcessor;
 
         public short[] Field
@@ -61,14 +61,14 @@ namespace Evolution
 
                 creature.X = x;
                 creature.Y = y;
-                creature.Rotation = _random.Next(4);
+                creature.Rotation = _random.Next(4) * 2;
                 creature.FoodValue = 20;
                 _points[y * width + x] = creature;
                 _foodBuffer -= creature.FoodValue;
             }
 
             FillFood();
-            _creatureProcessor = new CreatureProcessor(_points, width, height);
+            _creatureProcessor = new DnaInterpreter(_points, width, height);
         }
 
         public bool Step()
