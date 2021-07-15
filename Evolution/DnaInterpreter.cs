@@ -6,8 +6,7 @@ namespace Evolution
     public class DnaInterpreter
     {
         public const int PredefinedCommandsCount = 21;
-        public const int DnaLength = 64;
-        public const int TotalCommands = PredefinedCommandsCount + DnaLength;
+        public const int TotalCommands = PredefinedCommandsCount + RedirectProcessor.DnaLength;
 
         private readonly Field _field;
 
@@ -57,12 +56,12 @@ namespace Evolution
                 }
                 else
                 {
-                    processingCreature.ProcessingIndex = processingCreature.Command - PredefinedCommandsCount;
-                }
-
-                if (processingCreature.ProcessingIndex >= DnaLength)
-                {
-                    processingCreature.ProcessingIndex = 0;
+                    RedirectProcessor processor = new RedirectProcessor();
+                    Command command = processor.Process(processingCreature.Command - PredefinedCommandsCount, processingCreature);
+                    if (command != null)
+                    {
+                        return command.Movement;
+                    }
                 }
             }
             // Infinitive loop

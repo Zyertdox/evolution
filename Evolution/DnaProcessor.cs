@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Evolution.Interpreters;
 
 namespace Evolution
 {
@@ -50,14 +51,14 @@ namespace Evolution
 
         private Creature CreateCreature(CreatureRecord creatureRecord, int mutations)
         {
-            var dna = creatureRecord.Dna.Take(DnaInterpreter.DnaLength).ToList();
-            while (dna.Count < DnaInterpreter.DnaLength)
+            var dna = creatureRecord.Dna.Take(RedirectProcessor.DnaLength).ToList();
+            while (dna.Count < RedirectProcessor.DnaLength)
             {
                 dna.Add(0);
             }
             for (int i = 0; i < mutations; i++)
             {
-                var index = Random.Next(DnaInterpreter.DnaLength);
+                var index = Random.Next(RedirectProcessor.DnaLength);
                 dna[index] = Random.Next(DnaInterpreter.TotalCommands);
             }
             return new Creature

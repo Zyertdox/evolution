@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Evolution.Interpreters;
 
 namespace Evolution
 {
@@ -55,7 +56,7 @@ namespace Evolution
 
         private CreatureRecord[] CreateBase()
         {
-            var dna = new int[DnaInterpreter.DnaLength];
+            var dna = new int[RedirectProcessor.DnaLength];
             DnaInterpreter.DefaultDna.CopyTo(dna, 0);
 
             var record = new CreatureRecord
