@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Evolution.Interpreters;
+using Evolution.Model;
 
 namespace Evolution
 {
@@ -78,18 +79,5 @@ namespace Evolution
         {
             _repository.Dispose();
         }
-    }
-
-    public class Generation
-    {
-        public int RandomSeed { get; set; }
-        public IList<CreatureRecord> Records { get; set; }
-    }
-
-    public class CreatureRecord
-    {
-        public Guid Id { get; set; }
-        public Guid? ParentId { get; set; }
-        public IList<int> Dna { get; set; }
     }
 }
