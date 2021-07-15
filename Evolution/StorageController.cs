@@ -61,7 +61,7 @@ namespace Evolution
                 ParentId = null,
                 Dna = new int[CreatureProcessor.DnaLength]
             };
-            record.Dna[0] = 5;
+            record.Dna[0] = 7;
             var records = new CreatureRecord[DnaProcessor.GenerationSetCount];
             for (var i = 0; i < DnaProcessor.GenerationSetCount; i++)
             {

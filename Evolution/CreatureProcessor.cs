@@ -174,9 +174,15 @@ namespace Evolution
                         }
                         break;
                         #endregion Can Eat
+                    default:
+                        currentIndex = creature.Dna[currentIndex] - PredefinedCommandsCount;
+                        break;
                 }
 
-                currentIndex = creature.Dna[currentIndex] - PredefinedCommandsCount;
+                if (currentIndex >= DnaLength)
+                {
+                    currentIndex = 0;
+                }
             }
             // Infinitive loop
             return NullMovement;

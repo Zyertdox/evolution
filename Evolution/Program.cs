@@ -8,8 +8,8 @@ namespace Evolution
 {
     public class Program
     {
-        public const int Width = 150;
-        public const int Height = 50;
+        public const int Width = 100;
+        public const int Height = 100;
 
         [DllImport("Kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         static extern SafeFileHandle CreateFile(
@@ -109,11 +109,11 @@ namespace Evolution
                             new Coord(Width, Height),
                             new Coord(0, 0),
                             ref rect);
-                        Thread.Sleep(100);
+                        Thread.Sleep(50);
                         nextStep = processor.Step();
                     }
 
-                    Thread.Sleep(1000);
+                    Thread.Sleep(500);
                 }
             }
         }

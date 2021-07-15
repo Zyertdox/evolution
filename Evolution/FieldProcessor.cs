@@ -47,7 +47,7 @@ namespace Evolution
             _random = dnaProcessor.Random;
             _points = new IPoint[width * height];
 
-            _foodBuffer = 4500;
+            _foodBuffer = 10000;
 
             foreach (var creature in _creatures)
             {

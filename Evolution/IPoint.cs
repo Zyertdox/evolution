@@ -19,7 +19,7 @@ namespace Evolution
 
     public class Food : IPoint
     {
-        public int Value { get; set; } = 10;
+        public int Value { get; set; } = 7;
     }
 
     public class Wall : IPoint
