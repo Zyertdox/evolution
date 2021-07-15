@@ -2,7 +2,6 @@
 using Evolution.Model;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Evolution
 {
@@ -11,10 +10,8 @@ namespace Evolution
         public const int PredefinedCommandsCount = 21;
         public const int TotalCommands = PredefinedCommandsCount + RedirectProcessor.DnaLength;
 
-        public static List<string> Processors => _processors.Select(p => p.Item2.GetType().FullName).ToList();
-
         private readonly Field _field;
-        private static List<Tuple<int, IProcessor>> _processors;
+        public static List<Tuple<int, IProcessor>> Processors = new List<Tuple<int, IProcessor>>();
 
         public static int[] DefaultDna = { 5, 15, 23, 16, 23, 1, 2, 5, 15, 30, 16, 30, 1, 2, 1 };
 
@@ -37,12 +34,11 @@ namespace Evolution
 
         private static void Register(IEnumerable<IProcessor> processors)
         {
-            _processors = new List<Tuple<int, IProcessor>>();
             int index = 0;
 
             foreach (IProcessor processor in processors)
             {
-                _processors.Add(new Tuple<int, IProcessor>(index, processor));
+                Processors.Add(new Tuple<int, IProcessor>(index, processor));
                 index += processor.Length;
             }
         }
@@ -54,7 +50,7 @@ namespace Evolution
             while (processingCreature.NotProcessed())
             {
                 int commandIndex = processingCreature.Command;
-                foreach ((int level, IProcessor processor) in _processors)
+                foreach ((int level, IProcessor processor) in Processors)
                 {
                     if (commandIndex >= level && commandIndex < level + processor.Length)
                     {

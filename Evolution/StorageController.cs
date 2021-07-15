@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Evolution
 {
@@ -40,7 +41,7 @@ namespace Evolution
             {
                 RandomSeed = DateTime.UtcNow.ToFileTimeUtc().GetHashCode(),
                 Records = records,
-                Processors = DnaInterpreter.Processors
+                Processors = DnaInterpreter.Processors.Select((i, p) => p.GetType().FullName).ToList()
             };
 
             var dataStr = JsonConvert.SerializeObject(generation);
