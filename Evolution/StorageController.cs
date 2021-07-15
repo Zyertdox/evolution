@@ -32,7 +32,7 @@ namespace Evolution
             return JsonConvert.DeserializeObject<Generation>(dataStr);
         }
 
-        public void Save(CreatureRecord[] records)
+        public void Save(IList<CreatureRecord> records)
         {
             var generation = new Generation
             {
@@ -62,8 +62,8 @@ namespace Evolution
                 Dna = new int[CreatureProcessor.DnaLength]
             };
             record.Dna[0] = 5;
-            var records = new CreatureRecord[FieldProcessor.GenerationResetCount];
-            for (var i = 0; i < FieldProcessor.GenerationResetCount; i++)
+            var records = new CreatureRecord[DnaProcessor.GenerationSetCount];
+            for (var i = 0; i < DnaProcessor.GenerationSetCount; i++)
             {
                 records[i] = record;
             }

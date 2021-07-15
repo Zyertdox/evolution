@@ -6,8 +6,6 @@ namespace Evolution
 {
     public class FieldProcessor
     {
-        public const int GenerationResetCount = 10;
-
         private readonly int _width;
         private readonly int _height;
         private readonly Random _random;
@@ -16,7 +14,7 @@ namespace Evolution
         private readonly HashSet<Creature> _creatures;
         private int _foodBuffer;
         private readonly CreatureProcessor _creatureProcessor;
-        private readonly StorageController _storageController;
+        private readonly DnaProcessor _dnaProcessor;
 
         public short[] Field
         {
@@ -40,42 +38,32 @@ namespace Evolution
             }
         }
 
-        public FieldProcessor(int width, int height, StorageController storageController)
+        public FieldProcessor(int width, int height, DnaProcessor dnaProcessor)
         {
             _width = width;
             _height = height;
-            _storageController = storageController;
-            var generation = storageController.LoadLatest();
-            _random = new Random(generation.RandomSeed);
+            _dnaProcessor = dnaProcessor;
+            _creatures = dnaProcessor.GetCreatures();
+            _random = dnaProcessor.Random;
             _points = new IPoint[width * height];
-            _creatures = new HashSet<Creature>();
 
             _foodBuffer = 4500;
 
-            foreach (var record in generation.Records)
+            foreach (var creature in _creatures)
             {
-                for (var i = 0; i < 10; i++)
+                int x;
+                int y;
+                do
                 {
-                    int x;
-                    int y;
-                    do
-                    {
-                        x = _random.Next(width);
-                        y = _random.Next(height);
-                    } while (_points[y * width + x] != null);
+                    x = _random.Next(width);
+                    y = _random.Next(height);
+                } while (_points[y * width + x] != null);
 
-                    var point = new Creature
-                    {
-                        X = x,
-                        Y = y,
-                        FoodValue = 20,
-                        Dna = record.Dna,
-                        Parent = record.Id
-                    };
-                    _points[y * width + x] = point;
-                    _creatures.Add(point);
-                    _foodBuffer -= point.FoodValue;
-                }
+                creature.X = x;
+                creature.Y = y;
+                creature.FoodValue = 20;
+                _points[y * width + x] = creature;
+                _foodBuffer -= creature.FoodValue;
             }
 
             FillFood();
@@ -117,25 +105,18 @@ namespace Evolution
                 }
             }
 
-            if (_creatures.Count(c => c.FoodValue > 0) > GenerationResetCount)
+            if (_creatures.Count(c => c.FoodValue > 0) > DnaProcessor.GenerationSetCount)
             {
                 _creatures.RemoveWhere(c => c.FoodValue <= 0);
                 FillFood();
                 return true;
             }
 
-            while (_creatures.Count > GenerationResetCount)
+            while (_creatures.Count > DnaProcessor.GenerationSetCount)
             {
                 _creatures.Remove(_creatures.First(c => c.FoodValue <= 0));
             }
-
-            var creatures = _creatures.Select(c => new CreatureRecord
-            {
-                Id = Guid.NewGuid(),
-                ParentId = c.Parent,
-                Dna = c.Dna
-            }).ToArray();
-            _storageController.Save(creatures);
+            _dnaProcessor.SaveCreatures(_creatures);
             return false;
         }
 

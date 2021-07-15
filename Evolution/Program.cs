@@ -75,43 +75,46 @@ namespace Evolution
             if (!h.IsInvalid)
             {
                 using var storageController = new StorageController();
-                Console.ReadKey();
-                var processor = new FieldProcessor(Width, Height, storageController);
-                bool nextStep = true;
-                while (nextStep)
+                while (true)
                 {
-                    var field = processor.Field;
-
-                    CharInfo[] buf = new CharInfo[Width * Height];
-
-                    for (int i = 0; i < field.Length; i++)
+                    DnaProcessor dnaProcessor = new DnaProcessor(storageController);
+                    var processor = new FieldProcessor(Width, Height, dnaProcessor);
+                    bool nextStep = true;
+                    while (nextStep)
                     {
-                        switch (field[i])
+                        var field = processor.Field;
+
+                        CharInfo[] buf = new CharInfo[Width * Height];
+
+                        for (int i = 0; i < field.Length; i++)
                         {
-                            case 1:
-                                buf[i].Char.AsciiChar = 254;
-                                buf[i].Attributes = 2;
-                                break;
-                            case 2:
-                                buf[i].Char.AsciiChar = 215;
-                                buf[i].Attributes = 3;
-                                break;
-                            default:
-                                buf[i].Char.AsciiChar = 46;
-                                buf[i].Attributes = 5;
-                                break;
+                            switch (field[i])
+                            {
+                                case 1:
+                                    buf[i].Char.AsciiChar = 254;
+                                    buf[i].Attributes = 2;
+                                    break;
+                                case 2:
+                                    buf[i].Char.AsciiChar = 215;
+                                    buf[i].Attributes = 3;
+                                    break;
+                                default:
+                                    buf[i].Char.AsciiChar = 46;
+                                    buf[i].Attributes = 5;
+                                    break;
+                            }
                         }
+
+                        WriteConsoleOutput(h, buf,
+                            new Coord(Width, Height),
+                            new Coord(0, 0),
+                            ref rect);
+                        Thread.Sleep(100);
+                        nextStep = processor.Step();
                     }
 
-                    WriteConsoleOutput(h, buf,
-                        new Coord(Width, Height),
-                        new Coord(0, 0),
-                        ref rect);
-                    Thread.Sleep(100);
-                    nextStep = processor.Step();
+                    Thread.Sleep(1000);
                 }
-
-                Console.ReadKey();
             }
         }
     }
