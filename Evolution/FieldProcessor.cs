@@ -61,6 +61,7 @@ namespace Evolution
 
                 creature.X = x;
                 creature.Y = y;
+                creature.Rotation = _random.Next(4);
                 creature.FoodValue = 20;
                 _points[y * width + x] = creature;
                 _foodBuffer -= creature.FoodValue;

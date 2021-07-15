@@ -15,6 +15,12 @@ namespace Evolution
         public int FoodValue { get; set; }
         public IList<int> Dna { get; set; }
         public Guid Parent { get; set; }
+        
+        // Rotations
+        //   | 0 |
+        // 1 |   | 3
+        //   | 2 |
+        public int Rotation { get; set; }
     }
 
     public class Food : IPoint
