@@ -72,25 +72,11 @@ namespace Evolution
 
             if (!h.IsInvalid)
             {
+                Console.ReadKey();
+                var processor = new FieldProcessor(Width, Height, 0);
                 while (true)
                 {
-                    Console.Clear();
-                    var field = new short[Height * Width];
-
-                    Random random = new Random(123);
-                    for (int i = 0; i < Width*Height/10; i++)
-                    {
-                        var x = random.Next(Width);
-                        var y = random.Next(Height);
-                        field[y * Width + x] = 1;
-                    }
-
-                    for (int i = 0; i < Width * Height / 50; i++)
-                    {
-                        var x = random.Next(Width);
-                        var y = random.Next(Height);
-                        field[y * Width + x] = 2;
-                    }
+                    var field = processor.Field;
 
                     CharInfo[] buf = new CharInfo[Width * Height];
 
@@ -117,7 +103,8 @@ namespace Evolution
                         new Coord(Width, Height),
                         new Coord(0, 0),
                         ref rect);
-                    Thread.Sleep(300);
+                    Thread.Sleep(100);
+                    processor.Step();
                 }
             }
         }
