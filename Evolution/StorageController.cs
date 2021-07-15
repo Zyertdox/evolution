@@ -60,7 +60,7 @@ namespace Evolution
         private CreatureRecord[] CreateBase()
         {
             var dna = new int[RedirectProcessor.DnaLength];
-            DnaInterpreter.DefaultDna.CopyTo(dna, 0);
+            DnaInterpreter.Encode(DnaInterpreter.Processors, DnaInterpreter.DefaultDnaDecrypted).CopyTo(dna, 0);
 
             var record = new CreatureRecord
             {

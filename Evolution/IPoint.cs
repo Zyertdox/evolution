@@ -39,6 +39,14 @@ namespace Evolution
 
     public class ExtendedCommand
     {
+        public static ExtendedCommand Create<T>(int localCommand) where T: IProcessor, new()
+        {
+            return new ExtendedCommand
+            {
+                LocalCommand = localCommand,
+                Processor = new T()
+            };
+        }
         public int LocalCommand { get; set; }
         public IProcessor Processor { get; set; }
     }

@@ -8,13 +8,29 @@ namespace Evolution
 {
     public class DnaInterpreter
     {
-        public const int PredefinedCommandsCount = 21;
-        public const int TotalCommands = PredefinedCommandsCount + RedirectProcessor.DnaLength;
+        public static int PredefinedCommandsCount => Processors.Sum(p => p.Item2.Length);
+        public static int TotalCommands => PredefinedCommandsCount + RedirectProcessor.DnaLength;
 
         private readonly Field _field;
         public static List<Tuple<int, IProcessor>> Processors = new List<Tuple<int, IProcessor>>();
 
-        public static int[] DefaultDna = { 5, 15, 23, 16, 23, 1, 2, 5, 15, 30, 16, 30, 1, 2, 1 };
+        public static ExtendedCommand[] DefaultDnaDecrypted = {
+            ExtendedCommand.Create<FocusProcessor>(0),
+            ExtendedCommand.Create<IdentifyProcessor>(2),
+            ExtendedCommand.Create<RedirectProcessor>(6),
+            ExtendedCommand.Create<IdentifyProcessor>(3),
+            ExtendedCommand.Create<RedirectProcessor>(6),
+            ExtendedCommand.Create<MoveProcessor>(1),
+            ExtendedCommand.Create<RotationProcessor>(0),
+            ExtendedCommand.Create<FocusProcessor>(0),
+            ExtendedCommand.Create<IdentifyProcessor>(2),
+            ExtendedCommand.Create<RedirectProcessor>(13),
+            ExtendedCommand.Create<IdentifyProcessor>(3),
+            ExtendedCommand.Create<RedirectProcessor>(13),
+            ExtendedCommand.Create<MoveProcessor>(1),
+            ExtendedCommand.Create<RotationProcessor>(0),
+            ExtendedCommand.Create<MoveProcessor>(1)
+        };
 
         public DnaInterpreter(Field field)
         {
@@ -105,7 +121,7 @@ namespace Evolution
         {
             var procLevels = processors.ToDictionary(p => p.Item2.GetType().FullName, p => p.Item1);
             int[] dna = new int[commands.Length];
-            for(int i = 0; i < commands.Length; i++)
+            for (int i = 0; i < commands.Length; i++)
             {
                 var command = commands[i];
                 var level = procLevels[command.Processor.GetType().FullName];
