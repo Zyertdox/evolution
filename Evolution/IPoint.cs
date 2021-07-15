@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Evolution
 {
@@ -12,7 +13,8 @@ namespace Evolution
         public int X { get; set; }
         public int Y { get; set; }
         public int FoodValue { get; set; }
-        public int[] Dna { get; set; }
+        public IList<int> Dna { get; set; }
+        public Guid Parent { get; set; }
     }
 
     public class Food : IPoint

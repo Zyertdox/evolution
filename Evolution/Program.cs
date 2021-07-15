@@ -70,11 +70,15 @@ namespace Evolution
             SafeFileHandle h = CreateFile("CONOUT$", 0x40000000, 2, IntPtr.Zero, FileMode.Open, 0, IntPtr.Zero);
             SmallRect rect = new SmallRect { Left = 0, Top = 0, Right = Width, Bottom = Height };
 
+            new StorageController();
+
             if (!h.IsInvalid)
             {
+                using var storageController = new StorageController();
                 Console.ReadKey();
-                var processor = new FieldProcessor(Width, Height, 0);
-                while (true)
+                var processor = new FieldProcessor(Width, Height, storageController);
+                bool nextStep = true;
+                while (nextStep)
                 {
                     var field = processor.Field;
 
@@ -104,8 +108,10 @@ namespace Evolution
                         new Coord(0, 0),
                         ref rect);
                     Thread.Sleep(100);
-                    processor.Step();
+                    nextStep = processor.Step();
                 }
+
+                Console.ReadKey();
             }
         }
     }
