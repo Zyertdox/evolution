@@ -13,7 +13,7 @@ namespace Evolution.Model
         public Field Field { get; }
         public IPoint Target { get; set; }
 
-        public int Command => Dna[ProcessingIndex];
+        public int Command => ProcessingIndex >= Dna.Count ? -1 : Dna[ProcessingIndex];
 
         private readonly int _totalCommands;
 
