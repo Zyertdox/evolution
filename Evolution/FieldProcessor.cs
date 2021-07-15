@@ -64,7 +64,7 @@ namespace Evolution
                 creature.Rotation = _random.Next(4) * 2;
                 creature.FoodValue = 20;
                 _points[y * width + x] = creature;
-                _foodBuffer -= creature.FoodValue;
+                _foodBuffer -= creature.FoodValue + Creature.CreatureSkinFoodValue;
             }
 
             FillFood();
@@ -104,6 +104,10 @@ namespace Evolution
                         creature.Rotation = movement.Direction;
                     }
                     _points[creature.Y * _width + creature.X] = creature;
+                }
+                else
+                {
+                    _foodBuffer += Creature.CreatureSkinFoodValue;
                 }
             }
 

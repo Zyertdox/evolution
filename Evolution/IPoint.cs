@@ -10,6 +10,8 @@ namespace Evolution
 
     public class Creature : IPoint
     {
+        public const int CreatureSkinFoodValue = 20;
+
         public int X { get; set; }
         public int Y { get; set; }
         public int FoodValue { get; set; }
