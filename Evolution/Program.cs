@@ -1,8 +1,7 @@
-﻿using System;
+﻿using Microsoft.Win32.SafeHandles;
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading;
-using Microsoft.Win32.SafeHandles;
 
 namespace Evolution
 {
@@ -11,6 +10,7 @@ namespace Evolution
         public const int Width = 100;
         public const int Height = 100;
 
+        #region Lowlevel
         [DllImport("Kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         static extern SafeFileHandle CreateFile(
             string fileName,
@@ -64,13 +64,12 @@ namespace Evolution
             public short Right;
             public short Bottom;
         }
+        #endregion
 
         static void Main(string[] args)
         {
             SafeFileHandle h = CreateFile("CONOUT$", 0x40000000, 2, IntPtr.Zero, FileMode.Open, 0, IntPtr.Zero);
             SmallRect rect = new SmallRect { Left = 0, Top = 0, Right = Width, Bottom = Height };
-
-            new StorageController();
 
             if (!h.IsInvalid)
             {
@@ -109,11 +108,9 @@ namespace Evolution
                             new Coord(Width, Height),
                             new Coord(0, 0),
                             ref rect);
-                        //Thread.Sleep(20);
                         nextStep = processor.Step();
                     }
 
-                    //Thread.Sleep(200);
                 }
             }
         }

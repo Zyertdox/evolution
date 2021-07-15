@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Evolution.Interpreters;
+using Evolution.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Evolution.Interpreters;
-using Evolution.Model;
 
 namespace Evolution
 {
@@ -30,7 +29,7 @@ namespace Evolution
                 creatures.Add(CreateCreature(creatureRecord, 8));
                 creatures.Add(CreateCreature(creatureRecord, 4));
                 creatures.Add(CreateCreature(creatureRecord, 4));
-                for (int i = 0; i < GenerationSetCount-3; i++)
+                for (int i = 0; i < GenerationSetCount - 3; i++)
                 {
                     creatures.Add(CreateCreature(creatureRecord, 0));
                 }
