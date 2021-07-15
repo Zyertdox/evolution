@@ -4,7 +4,7 @@ namespace Evolution.Model
 {
     public class ProcessingCreature
     {
-        public ExtendedCommand[] DnaDecoded { get; private set; }
+        public DnaNode[] Dna { get; private set; }
         public HashSet<long> Processed { get; } = new HashSet<long>();
         public int X { get; set; }
         public int Y { get; set; }
@@ -17,7 +17,7 @@ namespace Evolution.Model
 
         public ProcessingCreature(Creature creature, int totalCommands, Field field)
         {
-            DnaDecoded = creature.DnaDecoded;
+            Dna = creature.Dna;
             X = creature.X;
             Y = creature.Y;
             Direction = creature.Rotation;

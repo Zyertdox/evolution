@@ -46,7 +46,7 @@ namespace Evolution
             {
                 Id = Guid.NewGuid(),
                 ParentId = c.Parent,
-                Dna = DnaInterpreter.Encode(DnaInterpreter.Processors, c.DnaDecoded)
+                Dna = DnaInterpreter.Encode(DnaInterpreter.Processors, c.Dna)
             }).ToList();
             _storageController.Save(creatureRecords);
         }
@@ -67,7 +67,7 @@ namespace Evolution
             return new Creature
             {
                 Parent = creatureRecord.Id,
-                DnaDecoded = DnaInterpreter.Decode(processors, dna)
+                Dna = DnaInterpreter.Decode(processors, dna)
             };
         }
     }

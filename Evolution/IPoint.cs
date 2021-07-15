@@ -16,7 +16,7 @@ namespace Evolution
         public int X { get; set; }
         public int Y { get; set; }
         public int FoodValue { get; set; }
-        public ExtendedCommand[] DnaDecoded { get; set; }
+        public DnaNode[] Dna { get; set; }
         public Guid Parent { get; set; }
         
         // Rotations
@@ -36,11 +36,11 @@ namespace Evolution
         public static Wall Default = new Wall();
     }
 
-    public class ExtendedCommand
+    public class DnaNode
     {
-        public static ExtendedCommand Create<T>(int localCommand) where T: IProcessor, new()
+        public static DnaNode Create<T>(int localCommand) where T: IProcessor, new()
         {
-            return new ExtendedCommand
+            return new DnaNode
             {
                 LocalCommand = localCommand,
                 Processor = new T()

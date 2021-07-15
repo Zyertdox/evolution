@@ -14,22 +14,22 @@ namespace Evolution
         private readonly Field _field;
         public static List<Tuple<int, IProcessor>> Processors = new List<Tuple<int, IProcessor>>();
 
-        public static ExtendedCommand[] DefaultDnaDecrypted = {
-            ExtendedCommand.Create<FocusProcessor>(0),
-            ExtendedCommand.Create<IdentifyProcessor>(2),
-            ExtendedCommand.Create<RedirectProcessor>(6),
-            ExtendedCommand.Create<IdentifyProcessor>(3),
-            ExtendedCommand.Create<RedirectProcessor>(6),
-            ExtendedCommand.Create<MoveProcessor>(1),
-            ExtendedCommand.Create<RotationProcessor>(0),
-            ExtendedCommand.Create<FocusProcessor>(0),
-            ExtendedCommand.Create<IdentifyProcessor>(2),
-            ExtendedCommand.Create<RedirectProcessor>(13),
-            ExtendedCommand.Create<IdentifyProcessor>(3),
-            ExtendedCommand.Create<RedirectProcessor>(13),
-            ExtendedCommand.Create<MoveProcessor>(1),
-            ExtendedCommand.Create<RotationProcessor>(0),
-            ExtendedCommand.Create<MoveProcessor>(1)
+        public static DnaNode[] DefaultDnaDecrypted = {
+            DnaNode.Create<FocusProcessor>(0),
+            DnaNode.Create<IdentifyProcessor>(2),
+            DnaNode.Create<RedirectProcessor>(6),
+            DnaNode.Create<IdentifyProcessor>(3),
+            DnaNode.Create<RedirectProcessor>(6),
+            DnaNode.Create<MoveProcessor>(1),
+            DnaNode.Create<RotationProcessor>(0),
+            DnaNode.Create<FocusProcessor>(0),
+            DnaNode.Create<IdentifyProcessor>(2),
+            DnaNode.Create<RedirectProcessor>(13),
+            DnaNode.Create<IdentifyProcessor>(3),
+            DnaNode.Create<RedirectProcessor>(13),
+            DnaNode.Create<MoveProcessor>(1),
+            DnaNode.Create<RotationProcessor>(0),
+            DnaNode.Create<MoveProcessor>(1)
         };
 
         public DnaInterpreter(Field field)
@@ -66,22 +66,22 @@ namespace Evolution
 
             while (processingCreature.NotProcessed())
             {
-                var command = processingCreature.ProcessingIndex >= processingCreature.DnaDecoded.Length
-                    ? ExtendedCommand.Create<MoveProcessor>(0)
-                    : processingCreature.DnaDecoded[processingCreature.ProcessingIndex];
-                var result = command.Processor.Process(command.LocalCommand, processingCreature);
-                if (result != null)
+                var dnaNode = processingCreature.ProcessingIndex >= processingCreature.Dna.Length
+                    ? DnaNode.Create<MoveProcessor>(0)
+                    : processingCreature.Dna[processingCreature.ProcessingIndex];
+                var command = dnaNode.Processor.Process(dnaNode.LocalCommand, processingCreature);
+                if (command != null)
                 {
-                    return result.Movement;
+                    return command.Movement;
                 }
             }
             // Infinitive loop
             return MoveProcessor.NullMovement(processingCreature.Direction);
         }
 
-        public static ExtendedCommand[] Decode(IList<IProcessor> processors, IList<int> dna)
+        public static DnaNode[] Decode(IList<IProcessor> processors, IList<int> dna)
         {
-            ExtendedCommand[] commands = new ExtendedCommand[dna.Count];
+            DnaNode[] commands = new DnaNode[dna.Count];
             for (int i = 0; i < dna.Count; i++)
             {
                 var value = dna[i];
@@ -102,7 +102,7 @@ namespace Evolution
                     value -= processors[index].Length;
                     index++;
                 }
-                commands[i] = new ExtendedCommand
+                commands[i] = new DnaNode
                 {
                     LocalCommand = value,
                     Processor = processors[index]
@@ -111,7 +111,7 @@ namespace Evolution
             return commands;
         }
 
-        public static int[] Encode(List<Tuple<int, IProcessor>> processors, ExtendedCommand[] commands)
+        public static int[] Encode(List<Tuple<int, IProcessor>> processors, DnaNode[] commands)
         {
             var procLevels = processors.ToDictionary(p => p.Item2.GetType().FullName, p => p.Item1);
             int[] dna = new int[commands.Length];
