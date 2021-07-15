@@ -67,7 +67,6 @@ namespace Evolution
             return new Creature
             {
                 Parent = creatureRecord.Id,
-                Dna = dna,
                 DnaDecoded = DnaInterpreter.Decode(processors, dna)
             };
         }

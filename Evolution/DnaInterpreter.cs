@@ -70,7 +70,7 @@ namespace Evolution
                     ? ExtendedCommand.Create<MoveProcessor>(0)
                     : processingCreature.DnaDecoded[processingCreature.ProcessingIndex];
                 var result = command.Processor.Process(command.LocalCommand, processingCreature);
-                if(result != null)
+                if (result != null)
                 {
                     return result.Movement;
                 }

@@ -16,7 +16,6 @@ namespace Evolution
         public int X { get; set; }
         public int Y { get; set; }
         public int FoodValue { get; set; }
-        public IList<int> Dna { get; set; }
         public ExtendedCommand[] DnaDecoded { get; set; }
         public Guid Parent { get; set; }
         
