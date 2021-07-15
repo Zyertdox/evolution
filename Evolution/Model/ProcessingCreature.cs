@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Evolution.Interpreters
+namespace Evolution.Model
 {
     public class ProcessingCreature
     {

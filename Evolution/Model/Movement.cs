@@ -1,4 +1,4 @@
-﻿namespace Evolution
+﻿namespace Evolution.Model
 {
     public class Movement
     {

@@ -1,4 +1,6 @@
-﻿namespace Evolution.Interpreters
+﻿using Evolution.Model;
+
+namespace Evolution.Interpreters
 {
     public interface IProcessor
     {

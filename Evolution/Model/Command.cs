@@ -1,4 +1,4 @@
-﻿namespace Evolution.Interpreters
+﻿namespace Evolution.Model
 {
     public class Command
     {
