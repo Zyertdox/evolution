@@ -2,6 +2,7 @@
 using Evolution.Model;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Evolution
 {
@@ -10,14 +11,20 @@ namespace Evolution
         public const int PredefinedCommandsCount = 21;
         public const int TotalCommands = PredefinedCommandsCount + RedirectProcessor.DnaLength;
 
+        public static List<string> Processors => _processors.Select(p => p.Item2.GetType().FullName).ToList();
+
         private readonly Field _field;
-        private List<Tuple<int, IProcessor>> _processors;
+        private static List<Tuple<int, IProcessor>> _processors;
 
         public static int[] DefaultDna = { 5, 15, 23, 16, 23, 1, 2, 5, 15, 30, 16, 30, 1, 2, 1 };
 
         public DnaInterpreter(Field field)
         {
             _field = field;
+        }
+
+        static DnaInterpreter()
+        {
             Register(new IProcessor[]
             {
                 new MoveProcessor(),
@@ -28,7 +35,7 @@ namespace Evolution
             });
         }
 
-        private void Register(IEnumerable<IProcessor> processors)
+        private static void Register(IEnumerable<IProcessor> processors)
         {
             _processors = new List<Tuple<int, IProcessor>>();
             int index = 0;

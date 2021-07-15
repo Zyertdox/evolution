@@ -1,10 +1,10 @@
-﻿using LibGit2Sharp;
+﻿using Evolution.Interpreters;
+using Evolution.Model;
+using LibGit2Sharp;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Evolution.Interpreters;
-using Evolution.Model;
 
 namespace Evolution
 {
@@ -39,7 +39,8 @@ namespace Evolution
             var generation = new Generation
             {
                 RandomSeed = DateTime.UtcNow.ToFileTimeUtc().GetHashCode(),
-                Records = records
+                Records = records,
+                Processors = DnaInterpreter.Processors
             };
 
             var dataStr = JsonConvert.SerializeObject(generation);

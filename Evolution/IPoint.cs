@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Evolution.Interpreters;
+using System;
 using System.Collections.Generic;
 
 namespace Evolution
@@ -16,6 +17,7 @@ namespace Evolution
         public int Y { get; set; }
         public int FoodValue { get; set; }
         public IList<int> Dna { get; set; }
+        public ExtendedCommand[] DnaDecoded { get; set; }
         public Guid Parent { get; set; }
         
         // Rotations
@@ -33,5 +35,11 @@ namespace Evolution
     public class Wall : IPoint
     {
         public static Wall Default = new Wall();
+    }
+
+    public class ExtendedCommand
+    {
+        public int LocalCommand { get; set; }
+        public IProcessor Processor { get; set; }
     }
 }

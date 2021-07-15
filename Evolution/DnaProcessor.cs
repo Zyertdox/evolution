@@ -22,16 +22,18 @@ namespace Evolution
         public HashSet<Creature> GetCreatures()
         {
             var baseCreatures = _storageController.LoadLatest();
+            var processors = baseCreatures.Processors.Select(p => Activator.CreateInstance(Type.GetType(p)) as IProcessor).ToList();
+
             Random = new Random(baseCreatures.RandomSeed);
             var creatures = new HashSet<Creature>();
             foreach (CreatureRecord creatureRecord in baseCreatures.Records)
             {
-                creatures.Add(CreateCreature(creatureRecord, 8));
-                creatures.Add(CreateCreature(creatureRecord, 4));
-                creatures.Add(CreateCreature(creatureRecord, 4));
+                creatures.Add(CreateCreature(creatureRecord, 8, processors));
+                creatures.Add(CreateCreature(creatureRecord, 4, processors));
+                creatures.Add(CreateCreature(creatureRecord, 4, processors));
                 for (int i = 0; i < GenerationSetCount - 3; i++)
                 {
-                    creatures.Add(CreateCreature(creatureRecord, 0));
+                    creatures.Add(CreateCreature(creatureRecord, 0, processors));
                 }
             }
 
@@ -49,7 +51,7 @@ namespace Evolution
             _storageController.Save(creatureRecords);
         }
 
-        private Creature CreateCreature(CreatureRecord creatureRecord, int mutations)
+        private Creature CreateCreature(CreatureRecord creatureRecord, int mutations, List<IProcessor> processors)
         {
             var dna = creatureRecord.Dna.Take(RedirectProcessor.DnaLength).ToList();
             while (dna.Count < RedirectProcessor.DnaLength)
@@ -61,10 +63,32 @@ namespace Evolution
                 var index = Random.Next(RedirectProcessor.DnaLength);
                 dna[index] = Random.Next(DnaInterpreter.TotalCommands);
             }
+            ExtendedCommand[] commands = new ExtendedCommand[dna.Count];
+            for (int i = 0; i < dna.Count; i++)
+            {
+                var value = dna[i];
+                int index = 0;
+                while (true)
+                {
+                    if (value < processors[index].Length)
+                    {
+                        break;
+                    }
+
+                    index++;
+                    value -= processors[index].Length;
+                }
+                commands[i] = new ExtendedCommand
+                {
+                    LocalCommand = value,
+                    Processor = processors[index]
+                };
+            }
             return new Creature
             {
                 Parent = creatureRecord.Id,
-                Dna = dna
+                Dna = dna,
+                DnaDecoded = commands
             };
         }
     }
