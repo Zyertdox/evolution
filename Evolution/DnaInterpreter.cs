@@ -39,17 +39,14 @@ namespace Evolution
 
         static DnaInterpreter()
         {
-            Register(new IProcessor[]
-            {
-                new MoveProcessor(),
-                new RotationProcessor(),
+            Register(new MoveProcessor(), 
+                new RotationProcessor(), 
                 new FocusProcessor(),
                 new IdentifyProcessor(),
-                new RedirectProcessor()
-            });
+                new RedirectProcessor());
         }
 
-        private static void Register(IEnumerable<IProcessor> processors)
+        private static void Register(params IProcessor[] processors)
         {
             int index = 0;
 

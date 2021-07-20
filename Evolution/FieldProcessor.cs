@@ -119,7 +119,7 @@ namespace Evolution
             {
                 _creatures.Remove(_creatures.First(c => c.FoodValue <= 0));
             }
-            _dnaProcessor.SaveCreatures(_creatures);
+            _dnaProcessor.SaveCreatures(_creatures, _field.FieldData);
             return false;
         }
 

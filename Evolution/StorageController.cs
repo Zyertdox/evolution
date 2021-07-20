@@ -25,7 +25,7 @@ namespace Evolution
             if (lastCommit == null)
             {
                 var records = CreateBase();
-                Save(records);
+                Save(records, new FieldData());
             }
         }
 
@@ -35,16 +35,23 @@ namespace Evolution
             return JsonConvert.DeserializeObject<Generation>(dataStr);
         }
 
-        public void Save(IList<CreatureRecord> records)
+        public void Save(IList<CreatureRecord> records, FieldData fieldData)
         {
             var generation = new Generation
             {
                 RandomSeed = DateTime.UtcNow.ToFileTimeUtc().GetHashCode(),
                 Records = records,
-                Processors = DnaInterpreter.Processors.Select(p => p.Item2.GetType().FullName).ToList()
+                Processors = DnaInterpreter.Processors.Select(p => p.Item2.GetType().FullName).ToList(),
+                Width = fieldData.Width,
+                Height = fieldData.Height,
+                Points = fieldData.Points.ToStorageData()
             };
 
-            var dataStr = JsonConvert.SerializeObject(generation);
+            var dataStr = JsonConvert.SerializeObject(generation, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                Formatting = Formatting.None
+            });
             File.WriteAllText(FilePath, dataStr);
             Commands.Stage(_repository, "*");
             var signature = new Signature(SignatureName, SignatureEmail, DateTimeOffset.Now);
