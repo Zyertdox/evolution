@@ -1,14 +1,11 @@
-﻿using System.Collections.Generic;
-
-namespace Evolution.Model
+﻿namespace Evolution.Model
 {
     public class Field
     {
-        public int Width { get; }
-        public int Height { get; }
+        private readonly FieldData _fieldData;
+        public int Width => _fieldData.Width;
+        public int Height => _fieldData.Height;
         public int Length => Width * Height;
-
-        private readonly IList<IPoint> _points;
 
         public IPoint this[int x, int y]
         {
@@ -18,9 +15,9 @@ namespace Evolution.Model
                 {
                     return Wall.Default;
                 }
-                return _points[x + y * Width];
+                return _fieldData.Points[x + y * Width];
             }
-            set => _points[x + y * Width] = value;
+            set => _fieldData.Points[x + y * Width] = value;
         }
 
         public IPoint this[int index]
@@ -31,19 +28,13 @@ namespace Evolution.Model
                 {
                     return null;
                 }
-                return _points[index];
+                return _fieldData.Points[index];
             }
         }
 
-        public Field(int width, int height) : this(width, height, new IPoint[width * height])
+        public Field(int width, int height)
         {
-        }
-
-        public Field(int width, int height, IList<IPoint> field)
-        {
-            Width = width;
-            Height = height;
-            _points = field;
+            _fieldData = new FieldData(width, height, null);
         }
     }
 }
