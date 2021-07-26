@@ -24,11 +24,22 @@ namespace Evolution
         // 1 |   | 3
         //   | 2 |
         public int Rotation { get; set; }
+
+        public static Creature Default = new Creature
+        {
+            X = 0,
+            Y = 0,
+            FoodValue = 7,
+            Dna = DnaInterpreter.DefaultDnaDecrypted,
+            Parent = new Guid(),
+            Rotation = 0
+        };
     }
 
     public class Food : IPoint
     {
-        public int Value { get; set; } = 7;
+        public static Food Default = new Food();
+        public int Value => 7;
     }
 
     public class Wall : IPoint

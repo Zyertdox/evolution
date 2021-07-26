@@ -25,7 +25,7 @@ namespace Evolution
             if (lastCommit == null)
             {
                 var records = CreateBase();
-                Save(records, new FieldData());
+                Save(records, FieldProcessor.InitDefaultField());
             }
         }
 

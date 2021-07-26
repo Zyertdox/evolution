@@ -137,5 +137,12 @@ namespace Evolution
                 }
             }
         }
+
+        public static FieldData InitDefaultField()
+        {
+            var data = new FieldData(300, 300, Food.Default);
+            data.Points[0] = Creature.Default;
+            return data;
+        }
     }
 }
