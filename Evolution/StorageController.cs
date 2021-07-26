@@ -37,15 +37,11 @@ namespace Evolution
 
         public void Save(IList<CreatureRecord> records, FieldData fieldData)
         {
-            var generation = new Generation
-            {
-                RandomSeed = DateTime.UtcNow.ToFileTimeUtc().GetHashCode(),
-                Records = records,
-                Processors = DnaInterpreter.Processors.Select(p => p.Item2.GetType().FullName).ToList(),
-                Width = fieldData.Width,
-                Height = fieldData.Height,
-                Points = fieldData.Points.ToStorageData()
-            };
+            var generation = StorageControllerExtension.ToStorageData(fieldData);
+
+            generation.RandomSeed = DateTime.UtcNow.ToFileTimeUtc().GetHashCode();
+            generation.Records = records;
+            generation.Processors = DnaInterpreter.Processors.Select(p => p.Item2.GetType().FullName).ToList();
 
             var dataStr = JsonConvert.SerializeObject(generation, new JsonSerializerSettings
             {

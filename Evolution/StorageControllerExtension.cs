@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Evolution.Model;
 
@@ -6,78 +7,80 @@ namespace Evolution
 {
     public static class StorageControllerExtension
     {
-        public static IList<Point> ToStorageData(this IList<IPoint> points)
+        public static Generation ToStorageData(FieldData fieldData)
         {
-            return points.Select(p => p.ToPoint()).ToList();
-        }
+            var walls = new List<int>();
+            var food = new List<int>();
+            var creatures = new List<CreatureItem>();
 
-        public static IList<IPoint> ToModel(this IList<Point> points)
-        {
-            return points.Select(p => p.ToIPoint()).ToList();
-        }
-
-        private static Point ToPoint(this IPoint point)
-        {
-            if (point is Creature creature)
+            for (int i = 0; i < fieldData.Points.Count; i++)
             {
-                return new Point
+                if (fieldData.Points[i] == null)
                 {
-                    T = PointType.Creature,
-                    X = creature.X,
-                    Y = creature.Y,
-                    V = creature.FoodValue,
-                    D = DnaInterpreter.Encode(DnaInterpreter.Processors, creature.Dna),
-                    P = creature.Parent,
-                    R = creature.Rotation
-                };
-            }
+                    continue;
+                }
 
-            if (point is Food food)
-            {
-                return new Point
+                if (fieldData.Points[i] is Wall)
                 {
-                    T = PointType.Food,
-                    V = food.Value
-                };
-            }
+                    walls.Add(i);
+                }
 
-            if (point is Wall)
-            {
-                return new Point
+                if (fieldData.Points[i] is Food)
                 {
-                    T = PointType.Wall
-                };
-            }
+                    food.Add(i);
+                }
 
-            return null;
-        }
-
-        private static IPoint ToIPoint(this Point point)
-        {
-            if (point == null)
-            {
-                return null;
-            }
-
-            switch (point.T)
-            {
-                case PointType.Wall:
-                    return Wall.Default;
-                case PointType.Food:
-                    return new Food {Value = point.V.Value};
-                case PointType.Creature:
-                    return new Creature
+                if (fieldData.Points[i] is Creature creature)
+                {
+                    creatures.Add(new CreatureItem
                     {
-                        Dna = DnaInterpreter.Decode(DnaInterpreter.Processors.Select(p => p.Item2).ToList(), point.D),
-                        Parent = point.P.Value,
-                        Rotation = point.R.Value,
-                        X = point.X.Value,
-                        Y = point.Y.Value,
-                        FoodValue = point.V.Value
-                    };
-                default:
-                    return null;
+                        I = Guid.NewGuid(),
+                        P = creature.Parent,
+                        R = creature.Rotation,
+                        X = i,
+                        V = creature.FoodValue,
+                        D = DnaInterpreter.Encode(DnaInterpreter.Processors, creature.Dna)
+                    });
+                }
             }
+
+            return new Generation
+            {
+                Walls = walls.Any() ? walls : null,
+                Creatures = creatures,
+                Food = food.Any() ? food : null,
+                Height = fieldData.Height,
+                Width = fieldData.Width
+            };
+        }
+
+        public static FieldData FromStorageData(Generation generation)
+        {
+            FieldData data = new FieldData(generation.Width, generation.Height, null);
+            foreach (var i in generation.Walls)
+            {
+                data.Points[i] = Wall.Default;
+            }
+
+            foreach (var i in generation.Food)
+            {
+                data.Points[i] = new Food();
+            }
+
+            foreach (var creature in generation.Creatures)
+            {
+                data.Points[creature.X] = new Creature()
+                {
+                    Parent = creature.P,
+                    FoodValue = creature.V,
+                    X = creature.X % generation.Width,
+                    Y = creature.X / generation.Width,
+                    Rotation = creature.R,
+                    Dna = DnaInterpreter.Decode(DnaInterpreter.Processors.Select(p => p.Item2).ToList(), creature.D)
+                };
+            }
+
+            return data;
         }
     }
 }
