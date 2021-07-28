@@ -7,30 +7,30 @@ namespace Evolution
 {
     public static class StorageControllerExtension
     {
-        public static Generation ToStorageData(FieldData fieldData)
+        public static Generation ToStorageData(Field field)
         {
             var walls = new List<int>();
             var food = new List<int>();
             var creatures = new List<CreatureItem>();
 
-            for (int i = 0; i < fieldData.Points.Count; i++)
+            for (int i = 0; i < field.Points.Count; i++)
             {
-                if (fieldData.Points[i] == null)
+                if (field.Points[i] == null)
                 {
                     continue;
                 }
 
-                if (fieldData.Points[i] is Wall)
+                if (field.Points[i] is Wall)
                 {
                     walls.Add(i);
                 }
 
-                if (fieldData.Points[i] is Food)
+                if (field.Points[i] is Food)
                 {
                     food.Add(i);
                 }
 
-                if (fieldData.Points[i] is Creature creature)
+                if (field.Points[i] is Creature creature)
                 {
                     creatures.Add(new CreatureItem
                     {
@@ -49,14 +49,14 @@ namespace Evolution
                 Walls = walls.Any() ? walls : null,
                 Creatures = creatures,
                 Food = food.Any() ? food : null,
-                Height = fieldData.Height,
-                Width = fieldData.Width
+                Height = field.Height,
+                Width = field.Width
             };
         }
 
-        public static FieldData FromStorageData(Generation generation)
+        public static Field FromStorageData(Generation generation)
         {
-            FieldData data = new FieldData(generation.Width, generation.Height, null);
+            Field data = new Field(generation.Width, generation.Height, null);
             foreach (var i in generation.Walls)
             {
                 data.Points[i] = Wall.Default;

@@ -40,7 +40,7 @@ namespace Evolution
             return creatures;
         }
 
-        public void SaveCreatures(IEnumerable<Creature> creatures, FieldData fieldData)
+        public void SaveCreatures(IEnumerable<Creature> creatures, Field field)
         {
             var creatureRecords = creatures.Select(c => new CreatureRecord
             {
@@ -48,7 +48,7 @@ namespace Evolution
                 ParentId = c.Parent,
                 Dna = DnaInterpreter.Encode(DnaInterpreter.Processors, c.Dna)
             }).ToList();
-            _storageController.Save(creatureRecords, fieldData);
+            _storageController.Save(creatureRecords, field);
         }
 
         private Creature CreateCreature(CreatureRecord creatureRecord, int mutations, List<IProcessor> processors)

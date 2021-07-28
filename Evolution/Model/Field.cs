@@ -2,18 +2,18 @@
 
 namespace Evolution.Model
 {
-    public class FieldData
+    public class Field
     {
         public IList<IPoint> Points { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
 
-        public FieldData(): this(0, 0, null)
+        public Field(): this(0, 0, null)
         {
             
         }
 
-        public FieldData(int width, int height, IPoint defaultValue)
+        public Field(int width, int height, IPoint defaultValue)
         {
             Width = width;
             Height = height;

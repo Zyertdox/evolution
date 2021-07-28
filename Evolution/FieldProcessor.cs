@@ -119,7 +119,7 @@ namespace Evolution
             {
                 _creatures.Remove(_creatures.First(c => c.FoodValue <= 0));
             }
-            _dnaProcessor.SaveCreatures(_creatures, _field.FieldData);
+            _dnaProcessor.SaveCreatures(_creatures, _field.Field);
             return false;
         }
 
@@ -138,9 +138,9 @@ namespace Evolution
             }
         }
 
-        public static FieldData InitDefaultField()
+        public static Field InitDefaultField()
         {
-            var data = new FieldData(300, 300, Food.Default);
+            var data = new Field(300, 300, Food.Default);
             data.Points[0] = Creature.Default;
             return data;
         }

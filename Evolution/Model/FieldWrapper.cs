@@ -2,9 +2,9 @@
 {
     public class FieldWrapper
     {
-        public FieldData FieldData { get; set; }
-        public int Width => FieldData.Width;
-        public int Height => FieldData.Height;
+        public Field Field { get; set; }
+        public int Width => Field.Width;
+        public int Height => Field.Height;
         public int Length => Width * Height;
 
         public IPoint this[int x, int y]
@@ -15,9 +15,9 @@
                 {
                     return Wall.Default;
                 }
-                return FieldData.Points[x + y * Width];
+                return Field.Points[x + y * Width];
             }
-            set => FieldData.Points[x + y * Width] = value;
+            set => Field.Points[x + y * Width] = value;
         }
 
         public IPoint this[int index]
@@ -28,13 +28,13 @@
                 {
                     return null;
                 }
-                return FieldData.Points[index];
+                return Field.Points[index];
             }
         }
 
         public FieldWrapper(int width, int height)
         {
-            FieldData = new FieldData(width, height, null);
+            Field = new Field(width, height, null);
         }
     }
 }

@@ -35,9 +35,9 @@ namespace Evolution
             return JsonConvert.DeserializeObject<Generation>(dataStr);
         }
 
-        public void Save(IList<CreatureRecord> records, FieldData fieldData)
+        public void Save(IList<CreatureRecord> records, Field field)
         {
-            var generation = StorageControllerExtension.ToStorageData(fieldData);
+            var generation = StorageControllerExtension.ToStorageData(field);
 
             generation.RandomSeed = DateTime.UtcNow.ToFileTimeUtc().GetHashCode();
             generation.Records = records;
