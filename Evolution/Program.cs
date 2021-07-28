@@ -76,8 +76,7 @@ namespace Evolution
                 using var storageController = new StorageController();
                 while (true)
                 {
-                    DnaProcessor dnaProcessor = new DnaProcessor(storageController);
-                    var processor = new FieldProcessor(Width, Height, dnaProcessor);
+                    var processor = new FieldProcessor(Width, Height, storageController);
                     bool nextStep = true;
                     while (nextStep)
                     {

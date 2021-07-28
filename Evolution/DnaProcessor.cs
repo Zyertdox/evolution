@@ -11,22 +11,18 @@ namespace Evolution
         public const int GenerationSetCount = 10;
 
         public Random Random;
-
-        private readonly StorageController _storageController;
-        public DnaProcessor(StorageController storageController)
+        public DnaProcessor()
         {
-            _storageController = storageController;
             Random = new Random();
         }
 
-        public HashSet<Creature> GetCreatures()
+        public HashSet<Creature> GetCreatures(Generation generation)
         {
-            var baseCreatures = _storageController.LoadLatest();
-            var processors = baseCreatures.Processors.Select(p => Activator.CreateInstance(Type.GetType(p)) as IProcessor).ToList();
+            var processors = generation.Processors.Select(p => Activator.CreateInstance(Type.GetType(p)) as IProcessor).ToList();
 
-            Random = new Random(baseCreatures.RandomSeed);
+            Random = new Random(generation.RandomSeed);
             var creatures = new HashSet<Creature>();
-            foreach (CreatureRecord creatureRecord in baseCreatures.Records)
+            foreach (CreatureRecord creatureRecord in generation.Records)
             {
                 creatures.Add(CreateCreature(creatureRecord, 8, processors));
                 creatures.Add(CreateCreature(creatureRecord, 4, processors));
@@ -38,17 +34,6 @@ namespace Evolution
             }
 
             return creatures;
-        }
-
-        public void SaveCreatures(IEnumerable<Creature> creatures, Field field)
-        {
-            var creatureRecords = creatures.Select(c => new CreatureRecord
-            {
-                Id = Guid.NewGuid(),
-                ParentId = c.Parent,
-                Dna = DnaInterpreter.Encode(DnaInterpreter.Processors, c.Dna)
-            }).ToList();
-            _storageController.Save(creatureRecords, field);
         }
 
         private Creature CreateCreature(CreatureRecord creatureRecord, int mutations, List<IProcessor> processors)

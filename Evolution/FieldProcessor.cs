@@ -13,7 +13,7 @@ namespace Evolution
         private readonly HashSet<Creature> _creatures;
         private int _foodBuffer;
         private readonly DnaInterpreter _creatureProcessor;
-        private readonly DnaProcessor _dnaProcessor;
+        private readonly StorageController _storageController;
 
         public short[] Field
         {
@@ -37,10 +37,12 @@ namespace Evolution
             }
         }
 
-        public FieldProcessor(int width, int height, DnaProcessor dnaProcessor)
+        public FieldProcessor(int width, int height, StorageController storageController)
         {
-            _dnaProcessor = dnaProcessor;
-            _creatures = dnaProcessor.GetCreatures();
+            _storageController = storageController;
+            var baseCreatures = _storageController.LoadLatest();
+            var dnaProcessor = new DnaProcessor();
+            _creatures = dnaProcessor.GetCreatures(baseCreatures);
             _random = dnaProcessor.Random;
             _field = new FieldWrapper(width, height);
 
@@ -119,7 +121,16 @@ namespace Evolution
             {
                 _creatures.Remove(_creatures.First(c => c.FoodValue <= 0));
             }
-            _dnaProcessor.SaveCreatures(_creatures, _field.Field);
+            
+            
+            var creatureRecords = _creatures.Select(c => new CreatureRecord
+            {
+                Id = Guid.NewGuid(),
+                ParentId = c.Parent,
+                Dna = DnaInterpreter.Encode(DnaInterpreter.Processors, c.Dna)
+            }).ToList();
+            _storageController.Save(creatureRecords, _field.Field);
+            
             return false;
         }
 
