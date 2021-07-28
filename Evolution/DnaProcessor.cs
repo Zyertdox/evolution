@@ -6,37 +6,31 @@ using System.Linq;
 
 namespace Evolution
 {
-    public class DnaProcessor
+    public static class DnaProcessor
     {
         public const int GenerationSetCount = 10;
 
-        public Random Random;
-        public DnaProcessor()
-        {
-            Random = new Random();
-        }
-
-        public HashSet<Creature> GetCreatures(Generation generation)
+        public static HashSet<Creature> GetCreatures(Generation generation, Random random)
         {
             var processors = generation.Processors.Select(p => Activator.CreateInstance(Type.GetType(p)) as IProcessor).ToList();
 
-            Random = new Random(generation.RandomSeed);
             var creatures = new HashSet<Creature>();
             foreach (CreatureRecord creatureRecord in generation.Records)
             {
-                creatures.Add(CreateCreature(creatureRecord, 8, processors));
-                creatures.Add(CreateCreature(creatureRecord, 4, processors));
-                creatures.Add(CreateCreature(creatureRecord, 4, processors));
+                creatures.Add(CreateCreature(creatureRecord, 8, processors, random));
+                creatures.Add(CreateCreature(creatureRecord, 4, processors, random));
+                creatures.Add(CreateCreature(creatureRecord, 4, processors, random));
                 for (int i = 0; i < GenerationSetCount - 3; i++)
                 {
-                    creatures.Add(CreateCreature(creatureRecord, 0, processors));
+                    creatures.Add(CreateCreature(creatureRecord, 0, processors, random));
                 }
             }
 
             return creatures;
         }
 
-        private Creature CreateCreature(CreatureRecord creatureRecord, int mutations, List<IProcessor> processors)
+        private static Creature CreateCreature(CreatureRecord creatureRecord, int mutations, List<IProcessor> processors,
+            Random random)
         {
             var dna = creatureRecord.Dna.Take(RedirectProcessor.DnaLength).ToList();
             while (dna.Count < RedirectProcessor.DnaLength)
@@ -45,8 +39,8 @@ namespace Evolution
             }
             for (int i = 0; i < mutations; i++)
             {
-                var index = Random.Next(RedirectProcessor.DnaLength);
-                dna[index] = Random.Next(DnaInterpreter.TotalCommands);
+                var index = random.Next(RedirectProcessor.DnaLength);
+                dna[index] = random.Next(DnaInterpreter.TotalCommands);
             }
 
             return new Creature

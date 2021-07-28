@@ -40,10 +40,11 @@ namespace Evolution
         public FieldProcessor(int width, int height, StorageController storageController)
         {
             _storageController = storageController;
-            var baseCreatures = _storageController.LoadLatest();
-            var dnaProcessor = new DnaProcessor();
-            _creatures = dnaProcessor.GetCreatures(baseCreatures);
-            _random = dnaProcessor.Random;
+            var generation = _storageController.LoadLatest();
+
+            _random = new Random(generation.RandomSeed);
+            
+            _creatures = DnaProcessor.GetCreatures(generation, _random);
             _field = new FieldWrapper(width, height);
 
             _foodBuffer = 10000;
