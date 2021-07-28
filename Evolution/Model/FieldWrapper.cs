@@ -1,6 +1,6 @@
 ﻿namespace Evolution.Model
 {
-    public class Field
+    public class FieldWrapper
     {
         public FieldData FieldData { get; set; }
         public int Width => FieldData.Width;
@@ -32,7 +32,7 @@
             }
         }
 
-        public Field(int width, int height)
+        public FieldWrapper(int width, int height)
         {
             FieldData = new FieldData(width, height, null);
         }

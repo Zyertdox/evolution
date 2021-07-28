@@ -10,12 +10,12 @@ namespace Evolution.Model
         public int Y { get; set; }
         public int ProcessingIndex { get; set; } = 0;
         public int Direction { get; set; }
-        public Field Field { get; }
+        public FieldWrapper Field { get; }
         public IPoint Target { get; set; }
 
         private readonly int _totalCommands;
 
-        public ProcessingCreature(Creature creature, int totalCommands, Field field)
+        public ProcessingCreature(Creature creature, int totalCommands, FieldWrapper field)
         {
             Dna = creature.Dna;
             X = creature.X;

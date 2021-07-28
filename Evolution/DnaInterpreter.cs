@@ -11,7 +11,7 @@ namespace Evolution
         public static int PredefinedCommandsCount => Processors.Sum(p => p.Item2.Length);
         public static int TotalCommands => PredefinedCommandsCount + RedirectProcessor.DnaLength;
 
-        private readonly Field _field;
+        private readonly FieldWrapper _field;
         public static List<Tuple<int, IProcessor>> Processors = new List<Tuple<int, IProcessor>>();
 
         public static DnaNode[] DefaultDnaDecrypted = {
@@ -32,7 +32,7 @@ namespace Evolution
             DnaNode.Create<MoveProcessor>(1)
         };
 
-        public DnaInterpreter(Field field)
+        public DnaInterpreter(FieldWrapper field)
         {
             _field = field;
         }

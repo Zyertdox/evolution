@@ -9,7 +9,7 @@ namespace Evolution
     {
         private readonly Random _random;
 
-        private readonly Field _field;
+        private readonly FieldWrapper _field;
         private readonly HashSet<Creature> _creatures;
         private int _foodBuffer;
         private readonly DnaInterpreter _creatureProcessor;
@@ -42,7 +42,7 @@ namespace Evolution
             _dnaProcessor = dnaProcessor;
             _creatures = dnaProcessor.GetCreatures();
             _random = dnaProcessor.Random;
-            _field = new Field(width, height);
+            _field = new FieldWrapper(width, height);
 
             _foodBuffer = 10000;
 
