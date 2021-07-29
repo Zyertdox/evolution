@@ -32,9 +32,9 @@
             }
         }
 
-        public FieldWrapper(int width, int height)
+        public FieldWrapper(Field field)
         {
-            Field = new Field(width, height, null);
+            Field = field;
         }
     }
 }

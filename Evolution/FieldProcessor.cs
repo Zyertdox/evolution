@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Evolution.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Evolution.Model;
 
 namespace Evolution
 {
@@ -19,8 +19,8 @@ namespace Evolution
         {
             get
             {
-                var result = new short[_field.Length];
-                for (var i = 0; i < _field.Length; i++)
+                short[] result = new short[_field.Length];
+                for (int i = 0; i < _field.Length; i++)
                 {
                     if (_field[i] is Creature)
                     {
@@ -37,35 +37,16 @@ namespace Evolution
             }
         }
 
-        public FieldProcessor(int width, int height, StorageController storageController)
+        public FieldProcessor(StorageController storageController)
         {
             _storageController = storageController;
-            var generation = _storageController.LoadLatest();
+            Generation generation = _storageController.LoadLatest();
 
             _random = new Random(generation.RandomSeed);
-            
-            _creatures = DnaProcessor.GetCreatures(generation, _random);
-            _field = new FieldWrapper(width, height);
 
-            _foodBuffer = 10000;
-
-            foreach (var creature in _creatures)
-            {
-                int x;
-                int y;
-                do
-                {
-                    x = _random.Next(width);
-                    y = _random.Next(height);
-                } while (_field[x, y] != null);
-
-                creature.X = x;
-                creature.Y = y;
-                creature.Rotation = _random.Next(4) * 2;
-                creature.FoodValue = 20;
-                _field[x, y] = creature;
-                _foodBuffer -= creature.FoodValue + Creature.CreatureSkinFoodValue;
-            }
+            _creatures = new HashSet<Creature>(_field.Field.Points.Where(p => p is Creature).Cast<Creature>().ToList());
+            Field field = StorageControllerExtension.FromStorageData(generation);
+            _field = new FieldWrapper(field);
 
             FillFood();
             _creatureProcessor = new DnaInterpreter(_field);
@@ -73,15 +54,15 @@ namespace Evolution
 
         public bool Step()
         {
-            foreach (var creature in _creatures)
+            foreach (Creature creature in _creatures)
             {
                 creature.FoodValue--;
                 _foodBuffer++;
 
-                var movement = _creatureProcessor.GetMovement(creature);
+                Movement movement = _creatureProcessor.GetMovement(creature);
 
-                var nextX = creature.X + movement.MoveX;
-                var nextY = creature.Y + movement.MoveY;
+                int nextX = creature.X + movement.MoveX;
+                int nextY = creature.Y + movement.MoveY;
                 if (nextX < 0 || nextX >= _field.Width || nextY < 0 || nextY >= _field.Height)
                 {
                     nextX = creature.X;
@@ -122,16 +103,8 @@ namespace Evolution
             {
                 _creatures.Remove(_creatures.First(c => c.FoodValue <= 0));
             }
-            
-            
-            var creatureRecords = _creatures.Select(c => new CreatureRecord
-            {
-                Id = Guid.NewGuid(),
-                ParentId = c.Parent,
-                Dna = DnaInterpreter.Encode(DnaInterpreter.Processors, c.Dna)
-            }).ToList();
-            _storageController.Save(creatureRecords, _field.Field);
-            
+            _storageController.Save(_field.Field);
+
             return false;
         }
 
@@ -139,11 +112,11 @@ namespace Evolution
         {
             while (_foodBuffer > 0)
             {
-                var x = _random.Next(_field.Width);
-                var y = _random.Next(_field.Height);
+                int x = _random.Next(_field.Width);
+                int y = _random.Next(_field.Height);
                 if (_field[x, y] == null)
                 {
-                    var food = new Food();
+                    Food food = new Food();
                     _field[x, y] = food;
                     _foodBuffer -= food.Value;
                 }
@@ -152,7 +125,7 @@ namespace Evolution
 
         public static Field InitDefaultField()
         {
-            var data = new Field(300, 300, Food.Default);
+            Field data = new Field(300, 300, Food.Default);
             data.Points[0] = Creature.Default;
             return data;
         }

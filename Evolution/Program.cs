@@ -7,8 +7,8 @@ namespace Evolution
 {
     public class Program
     {
-        public const int Width = 100;
-        public const int Height = 100;
+        public const int Width = 300;
+        public const int Height = 300;
 
         #region Lowlevel
         [DllImport("Kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
@@ -76,7 +76,7 @@ namespace Evolution
                 using var storageController = new StorageController();
                 while (true)
                 {
-                    var processor = new FieldProcessor(Width, Height, storageController);
+                    var processor = new FieldProcessor(storageController);
                     bool nextStep = true;
                     while (nextStep)
                     {

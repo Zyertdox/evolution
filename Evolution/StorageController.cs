@@ -1,9 +1,7 @@
-﻿using Evolution.Interpreters;
-using Evolution.Model;
+﻿using Evolution.Model;
 using LibGit2Sharp;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -21,63 +19,41 @@ namespace Evolution
         {
             Repository.Init(SourceLib);
             _repository = new Repository(SourceLib);
-            var lastCommit = _repository.Head.Tip;
+            Commit lastCommit = _repository.Head.Tip;
             if (lastCommit == null)
             {
-                var records = CreateBase();
-                Save(records, FieldProcessor.InitDefaultField());
+                Save(FieldProcessor.InitDefaultField());
             }
         }
 
         public Generation LoadLatest()
         {
-            var dataStr = File.ReadAllText(FilePath);
+            string dataStr = File.ReadAllText(FilePath);
             return JsonConvert.DeserializeObject<Generation>(dataStr);
         }
 
-        public void Save(IList<CreatureRecord> records, Field field)
+        public void Save(Field field)
         {
-            var generation = StorageControllerExtension.ToStorageData(field);
+            Generation generation = StorageControllerExtension.ToStorageData(field);
 
             generation.RandomSeed = DateTime.UtcNow.ToFileTimeUtc().GetHashCode();
-            generation.Records = records;
             generation.Processors = DnaInterpreter.Processors.Select(p => p.Item2.GetType().FullName).ToList();
 
-            var dataStr = JsonConvert.SerializeObject(generation, new JsonSerializerSettings
+            string dataStr = JsonConvert.SerializeObject(generation, new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore,
                 Formatting = Formatting.None
             });
             File.WriteAllText(FilePath, dataStr);
             Commands.Stage(_repository, "*");
-            var signature = new Signature(SignatureName, SignatureEmail, DateTimeOffset.Now);
-            var prevGeneration = _repository.Head.Tip?.Message;
-            var v = 0;
+            Signature signature = new Signature(SignatureName, SignatureEmail, DateTimeOffset.Now);
+            string prevGeneration = _repository.Head.Tip?.Message;
+            int v = 0;
             if (prevGeneration != null)
             {
                 v = int.Parse(prevGeneration.Split("-")[1]) + 1;
             }
             _repository.Commit("generation-" + v, signature, signature);
-        }
-
-        private CreatureRecord[] CreateBase()
-        {
-            var dna = new int[RedirectProcessor.DnaLength];
-            DnaInterpreter.Encode(DnaInterpreter.Processors, DnaInterpreter.DefaultDnaDecrypted).CopyTo(dna, 0);
-
-            var record = new CreatureRecord
-            {
-                Id = Guid.NewGuid(),
-                ParentId = null,
-                Dna = dna
-            };
-            var records = new CreatureRecord[DnaProcessor.GenerationSetCount];
-            for (var i = 0; i < DnaProcessor.GenerationSetCount; i++)
-            {
-                records[i] = record;
-            }
-
-            return records;
         }
 
         void IDisposable.Dispose()

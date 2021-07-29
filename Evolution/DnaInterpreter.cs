@@ -39,8 +39,8 @@ namespace Evolution
 
         static DnaInterpreter()
         {
-            Register(new MoveProcessor(), 
-                new RotationProcessor(), 
+            Register(new MoveProcessor(),
+                new RotationProcessor(),
                 new FocusProcessor(),
                 new IdentifyProcessor(),
                 new RedirectProcessor());
@@ -63,10 +63,10 @@ namespace Evolution
 
             while (processingCreature.NotProcessed())
             {
-                var dnaNode = processingCreature.ProcessingIndex >= processingCreature.Dna.Length
+                DnaNode dnaNode = processingCreature.ProcessingIndex >= processingCreature.Dna.Length
                     ? DnaNode.Create<MoveProcessor>(0)
                     : processingCreature.Dna[processingCreature.ProcessingIndex];
-                var command = dnaNode.Processor.Process(dnaNode.LocalCommand, processingCreature);
+                Command command = dnaNode.Processor.Process(dnaNode.LocalCommand, processingCreature);
                 if (command != null)
                 {
                     return command.Movement;
@@ -81,7 +81,7 @@ namespace Evolution
             DnaNode[] commands = new DnaNode[dna.Count];
             for (int i = 0; i < dna.Count; i++)
             {
-                var value = dna[i];
+                int value = dna[i];
                 int index = 0;
                 while (true)
                 {
@@ -110,12 +110,12 @@ namespace Evolution
 
         public static int[] Encode(List<Tuple<int, IProcessor>> processors, DnaNode[] commands)
         {
-            var procLevels = processors.ToDictionary(p => p.Item2.GetType().FullName, p => p.Item1);
+            Dictionary<string, int> procLevels = processors.ToDictionary(p => p.Item2.GetType().FullName, p => p.Item1);
             int[] dna = new int[commands.Length];
             for (int i = 0; i < commands.Length; i++)
             {
-                var command = commands[i];
-                var level = procLevels[command.Processor.GetType().FullName];
+                DnaNode command = commands[i];
+                int level = procLevels[command.Processor.GetType().FullName];
                 dna[i] = level + command.LocalCommand;
             }
             return dna;

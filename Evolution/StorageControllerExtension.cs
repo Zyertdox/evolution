@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Evolution.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Evolution.Model;
 
 namespace Evolution
 {
@@ -9,9 +9,9 @@ namespace Evolution
     {
         public static Generation ToStorageData(Field field)
         {
-            var walls = new List<int>();
-            var food = new List<int>();
-            var creatures = new List<CreatureItem>();
+            List<int> walls = new List<int>();
+            List<int> food = new List<int>();
+            List<CreatureItem> creatures = new List<CreatureItem>();
 
             for (int i = 0; i < field.Points.Count; i++)
             {
@@ -57,17 +57,17 @@ namespace Evolution
         public static Field FromStorageData(Generation generation)
         {
             Field data = new Field(generation.Width, generation.Height, null);
-            foreach (var i in generation.Walls)
+            foreach (int i in generation.Walls)
             {
                 data.Points[i] = Wall.Default;
             }
 
-            foreach (var i in generation.Food)
+            foreach (int i in generation.Food)
             {
                 data.Points[i] = new Food();
             }
 
-            foreach (var creature in generation.Creatures)
+            foreach (CreatureItem creature in generation.Creatures)
             {
                 data.Points[creature.X] = new Creature()
                 {

@@ -1,6 +1,5 @@
 ﻿using Evolution.Interpreters;
 using System;
-using System.Collections.Generic;
 
 namespace Evolution
 {
@@ -18,7 +17,7 @@ namespace Evolution
         public int FoodValue { get; set; }
         public DnaNode[] Dna { get; set; }
         public Guid Parent { get; set; }
-        
+
         // Rotations
         //   | 0 |
         // 1 |   | 3
@@ -49,7 +48,7 @@ namespace Evolution
 
     public class DnaNode
     {
-        public static DnaNode Create<T>(int localCommand) where T: IProcessor, new()
+        public static DnaNode Create<T>(int localCommand) where T : IProcessor, new()
         {
             return new DnaNode
             {
