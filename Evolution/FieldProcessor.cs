@@ -8,6 +8,8 @@ namespace Evolution
     public class FieldProcessor
     {
         private readonly Random _random;
+        
+        public const int GenerationSetCount = 10;
 
         private readonly FieldWrapper _field;
         private readonly HashSet<Creature> _creatures;
@@ -92,14 +94,14 @@ namespace Evolution
                 }
             }
 
-            if (_creatures.Count(c => c.FoodValue > 0) > DnaProcessor.GenerationSetCount)
+            if (_creatures.Count(c => c.FoodValue > 0) > GenerationSetCount)
             {
                 _creatures.RemoveWhere(c => c.FoodValue <= 0);
                 FillFood();
                 return true;
             }
 
-            while (_creatures.Count > DnaProcessor.GenerationSetCount)
+            while (_creatures.Count > GenerationSetCount)
             {
                 _creatures.Remove(_creatures.First(c => c.FoodValue <= 0));
             }

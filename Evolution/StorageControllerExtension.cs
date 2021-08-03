@@ -39,7 +39,7 @@ namespace Evolution
                         R = creature.Rotation,
                         X = i,
                         V = creature.FoodValue,
-                        D = DnaInterpreter.Encode(DnaInterpreter.Processors, creature.Dna)
+                        D = DnaInterpreter.Encode(creature.Dna)
                     });
                 }
             }
@@ -76,7 +76,7 @@ namespace Evolution
                     X = creature.X % generation.Width,
                     Y = creature.X / generation.Width,
                     Rotation = creature.R,
-                    Dna = DnaInterpreter.Decode(DnaInterpreter.Processors.Select(p => p.Item2).ToList(), creature.D)
+                    Dna = DnaInterpreter.Decode(ProcessorFactory.GetProcessors(generation.Processors), creature.D)
                 };
             }
 

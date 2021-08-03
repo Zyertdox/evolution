@@ -37,7 +37,7 @@ namespace Evolution
             Generation generation = StorageControllerExtension.ToStorageData(field);
 
             generation.RandomSeed = DateTime.UtcNow.ToFileTimeUtc().GetHashCode();
-            generation.Processors = DnaInterpreter.Processors.Select(p => p.Item2.GetType().FullName).ToList();
+            generation.Processors = ProcessorFactory.IndexedProcessors.OrderBy(p => p.Value).Select(p => p.Key.GetType().FullName).ToList();
 
             string dataStr = JsonConvert.SerializeObject(generation, new JsonSerializerSettings
             {

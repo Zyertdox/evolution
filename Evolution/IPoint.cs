@@ -1,5 +1,6 @@
 ﻿using Evolution.Interpreters;
 using System;
+using System.Linq;
 
 namespace Evolution
 {
@@ -50,10 +51,10 @@ namespace Evolution
     {
         public static DnaNode Create<T>(int localCommand) where T : IProcessor, new()
         {
-            return new DnaNode
+            return new()
             {
                 LocalCommand = localCommand,
-                Processor = new T()
+                Processor = ProcessorFactory.IndexedProcessors.Keys.First(p => p is T)
             };
         }
         public int LocalCommand { get; set; }
