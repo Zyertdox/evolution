@@ -57,19 +57,19 @@ namespace Evolution
         public static Field FromStorageData(Generation generation)
         {
             Field data = new Field(generation.Width, generation.Height, null);
-            foreach (int i in generation.Walls)
+            foreach (int i in generation.Walls ?? new int[0])
             {
                 data.Points[i] = Wall.Default;
             }
 
-            foreach (int i in generation.Food)
+            foreach (int i in generation.Food ?? new int[0])
             {
                 data.Points[i] = new Food();
             }
 
             foreach (CreatureItem creature in generation.Creatures)
             {
-                data.Points[creature.X] = new Creature()
+                data.Points[creature.X] = new Creature
                 {
                     Parent = creature.P,
                     FoodValue = creature.V,

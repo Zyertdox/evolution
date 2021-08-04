@@ -14,10 +14,10 @@ namespace Evolution
         static ProcessorFactory()
         {
             var type = typeof(IProcessor);
-            
+
             BaseProcessors = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
-                .Where(p => type.IsAssignableFrom(p))
+                .Where(p => p.IsClass && type.IsAssignableFrom(p))
                 .OrderBy(s => s.FullName)
                 .Select(Activator.CreateInstance)
                 .Cast<IProcessor>()
@@ -40,6 +40,7 @@ namespace Evolution
             foreach (var processorName in processorNames)
             {
                 sortedProcessors.Add((index, BaseProcessors[processorName]));
+                index += BaseProcessors[processorName].Length;
             }
 
             return sortedProcessors;

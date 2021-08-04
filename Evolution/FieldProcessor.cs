@@ -46,9 +46,8 @@ namespace Evolution
 
             _random = new Random(generation.RandomSeed);
 
+            _field = new FieldWrapper(StorageControllerExtension.FromStorageData(generation));
             _creatures = new HashSet<Creature>(_field.Field.Points.Where(p => p is Creature).Cast<Creature>().ToList());
-            Field field = StorageControllerExtension.FromStorageData(generation);
-            _field = new FieldWrapper(field);
 
             FillFood();
             _creatureProcessor = new DnaInterpreter(_field);
